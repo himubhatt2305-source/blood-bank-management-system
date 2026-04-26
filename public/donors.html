@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Donor Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background: #f5f6fa; }
+
+    .navbar { background: #dc3545; }
+
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn { border-radius: 20px; }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark p-3">
+  <div class="container d-flex justify-content-between">
+    <span class="navbar-brand">🩸 Blood Bank Dashboard</span>
+    <a href="/logout" class="btn btn-light">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <!-- STATS -->
+  <div class="row mb-4">
+
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h4 id="totalDonors">0</h4>
+        <p>Total Donors</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h4 id="totalRequests">0</h4>
+        <p>Total Requests</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h4 id="approvedCount">0</h4>
+        <p>Approved</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <h4 id="pendingCount">0</h4>
+        <p>Pending</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEARCH -->
+  <div class="d-flex mb-3">
+    <select id="searchInput" class="form-select me-2" onchange="searchDonor()">
+      <option value="">Filter by Blood Group</option>
+      <option>A+</option>
+      <option>A-</option>
+      <option>B+</option>
+      <option>B-</option>
+      <option>O+</option>
+      <option>O-</option>
+      <option>AB+</option>
+      <option>AB-</option>
+    </select>
+
+    <a href="requests.html" class="btn btn-dark">View Requests</a>
+  </div>
+
+  <!-- EDIT FORM -->
+  <div class="card p-3 mb-3">
+    <h5>Edit Donor</h5>
+    <input id="editName" class="form-control my-1" placeholder="Name">
+    <input id="editGroup" class="form-control my-1" placeholder="Blood Group">
+    <input id="editPhone" class="form-control my-1" placeholder="Phone">
+    <input id="editCity" class="form-control my-1" placeholder="City">
+    <button onclick="updateDonor()" class="btn btn-success mt-2">Update</button>
+  </div>
+
+  <!-- TABLE -->
+  <table class="table table-bordered">
+    <thead class="table-danger">
+      <tr>
+        <th>Name</th>
+        <th>Blood Group</th>
+        <th>Phone</th>
+        <th>City</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="donorTable"></tbody>
+  </table>
+
+</div>
+
+<!-- TOAST -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+  <div id="toastMsg" class="toast align-items-center text-white bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="toastText"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+let editId = null;
+
+// TOAST FUNCTION
+function showToast(message) {
+  const toastEl = document.getElementById("toastMsg");
+  document.getElementById("toastText").innerText = message;
+
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
+
+// LOAD DONORS
+function loadDonors() {
+  fetch('/donors')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("totalDonors").innerText = data.length;
+    renderTable(data);
+  });
+}
+
+// LOAD STATS
+function loadStats() {
+  fetch('/requests')
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById("totalRequests").innerText = data.length;
+
+    let approved = data.filter(r => r.status === "Approved").length;
+    let pending = data.filter(r => r.status === "Pending").length;
+
+    document.getElementById("approvedCount").innerText = approved;
+    document.getElementById("pendingCount").innerText = pending;
+  });
+}
+
+// RENDER TABLE
+function renderTable(data) {
+  const table = document.getElementById("donorTable");
+  table.innerHTML = "";
+
+  data.forEach(donor => {
+    table.innerHTML += `
+      <tr>
+        <td>${donor.name}</td>
+        <td>${donor.bloodGroup}</td>
+        <td>${donor.phone}</td>
+        <td>${donor.city}</td>
+        <td>
+          <button onclick="editDonor('${donor._id}','${donor.name}','${donor.bloodGroup}','${donor.phone}','${donor.city}')" class="btn btn-warning btn-sm">Edit</button>
+          <button onclick="deleteDonor('${donor._id}')" class="btn btn-danger btn-sm">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// SEARCH
+function searchDonor() {
+  const bg = document.getElementById("searchInput").value;
+
+  if (!bg) return loadDonors();
+
+  fetch(`/search?bloodGroup=${bg}`)
+  .then(res => res.json())
+  .then(data => renderTable(data));
+}
+
+// EDIT
+function editDonor(id, name, group, phone, city) {
+  editId = id;
+  editName.value = name;
+  editGroup.value = group;
+  editPhone.value = phone;
+  editCity.value = city;
+}
+
+// UPDATE
+function updateDonor() {
+  if (!editId) {
+    showToast("Click Edit first");
+    return;
+  }
+
+  fetch(`/update-donor/${editId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: editName.value,
+      bloodGroup: editGroup.value,
+      phone: editPhone.value,
+      city: editCity.value
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    showToast(msg);
+    editId = null;
+    loadDonors();
+    loadStats();
+  });
+}
+
+// DELETE
+function deleteDonor(id) {
+  if (!confirm("Delete this donor?")) return;
+
+  fetch(`/delete-donor/${id}`, { method: "DELETE" })
+  .then(res => res.text())
+  .then(msg => {
+    showToast(msg);
+    loadDonors();
+    loadStats();
+  });
+}
+
+// INITIAL LOAD
+loadDonors();
+loadStats();
+
+</script>
+
+</body>
+</html>
