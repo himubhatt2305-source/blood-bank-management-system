@@ -1,95 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Dashboard</title>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- BOOTSTRAP -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- ICONS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <!-- ICONS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
 
-  <style>
-    body {
-      background: #f4f6f9;
-    }
+/* BACKGROUND */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+  url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b');
+  background-size: cover;
+  color: white;
+}
 
-    .navbar {
-      background: linear-gradient(45deg, #dc3545, #ff6b6b);
-    }
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  width: 230px;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  padding-top: 20px;
+  transition: 0.3s;
+}
 
-    .card {
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
+.sidebar h4 {
+  text-align: center;
+  margin-bottom: 30px;
+}
 
-    .card i {
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
+.sidebar a {
+  display: block;
+  padding: 12px 20px;
+  color: white;
+  text-decoration: none;
+  transition: 0.3s;
+}
 
-    .btn {
-      border-radius: 20px;
-    }
+.sidebar a:hover {
+  background: red;
+}
 
-    .table {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+/* CONTENT */
+.content {
+  margin-left: 230px;
+  padding: 20px;
+  transition: 0.3s;
+}
 
-    @media(max-width:768px){
-      .card {
-        margin-bottom: 15px;
-      }
-    }
-  </style>
+/* CARDS */
+.card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  text-align: center;
+  padding: 20px;
+  color: white;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* TABLE */
+.table {
+  background: white;
+  color: black;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* MOBILE */
+.menu-btn {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@media(max-width:768px){
+  .sidebar {
+    left: -230px;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark p-3">
-  <div class="container">
-    <span class="navbar-brand"><i class="fa-solid fa-droplet"></i> Blood Bank</span>
-    <a href="/logout" class="btn btn-light btn-sm">Logout</a>
-  </div>
-</nav>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <h4><i class="fa-solid fa-droplet"></i> Blood Bank</h4>
 
-<div class="container mt-4">
+  <a href="#"><i class="fa-solid fa-house"></i> Dashboard</a>
+  <a href="requests.html"><i class="fa-solid fa-list"></i> Requests</a>
+  <a href="#"><i class="fa-solid fa-user"></i> Donors</a>
+  <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- TOP BAR -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="menu-btn" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </span>
+    <h4>Dashboard</h4>
+  </div>
 
   <!-- STATS -->
   <div class="row text-center">
 
-    <div class="col-6 col-md-3">
-      <div class="card p-3">
-        <i class="fa-solid fa-users text-primary"></i>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card">
+        <i class="fa-solid fa-users fa-2x"></i>
         <h4 id="totalDonors">0</h4>
         <p>Donors</p>
       </div>
     </div>
 
-    <div class="col-6 col-md-3">
-      <div class="card p-3">
-        <i class="fa-solid fa-notes-medical text-danger"></i>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card">
+        <i class="fa-solid fa-notes-medical fa-2x"></i>
         <h4 id="totalRequests">0</h4>
         <p>Requests</p>
       </div>
     </div>
 
-    <div class="col-6 col-md-3">
-      <div class="card p-3">
-        <i class="fa-solid fa-check text-success"></i>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card">
+        <i class="fa-solid fa-check fa-2x"></i>
         <h4 id="approvedCount">0</h4>
         <p>Approved</p>
       </div>
     </div>
 
-    <div class="col-6 col-md-3">
-      <div class="card p-3">
-        <i class="fa-solid fa-clock text-warning"></i>
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card">
+        <i class="fa-solid fa-clock fa-2x"></i>
         <h4 id="pendingCount">0</h4>
         <p>Pending</p>
       </div>
@@ -97,20 +168,15 @@
 
   </div>
 
-  <!-- ACTION BAR -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 mb-3">
-
+  <!-- FILTER -->
+  <div class="d-flex justify-content-between mb-3">
     <select id="searchInput" class="form-select w-auto" onchange="searchDonor()">
-      <option value="">Filter Blood Group</option>
+      <option value="">Filter Blood</option>
       <option>A+</option><option>A-</option>
       <option>B+</option><option>B-</option>
       <option>O+</option><option>O-</option>
       <option>AB+</option><option>AB-</option>
     </select>
-
-    <a href="requests.html" class="btn btn-dark mt-2 mt-md-0">
-      <i class="fa-solid fa-list"></i> Requests
-    </a>
   </div>
 
   <!-- TABLE -->
@@ -131,79 +197,74 @@
 
 </div>
 
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
-let editId = null;
+// SIDEBAR TOGGLE
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("active");
+}
 
-// LOAD DONORS
+// LOAD DATA
 function loadDonors() {
   fetch('/donors')
   .then(res => res.json())
   .then(data => {
-    document.getElementById("totalDonors").innerText = data.length;
+    totalDonors.innerText = data.length;
     renderTable(data);
   });
 }
 
-// LOAD STATS
 function loadStats() {
   fetch('/requests')
   .then(res => res.json())
   .then(data => {
-
-    document.getElementById("totalRequests").innerText = data.length;
-
-    let approved = data.filter(r => r.status === "Approved").length;
-    let pending = data.filter(r => r.status === "Pending").length;
-
-    document.getElementById("approvedCount").innerText = approved;
-    document.getElementById("pendingCount").innerText = pending;
+    totalRequests.innerText = data.length;
+    approvedCount.innerText = data.filter(r=>r.status==="Approved").length;
+    pendingCount.innerText = data.filter(r=>r.status==="Pending").length;
   });
 }
 
 // TABLE
-function renderTable(data) {
-  const table = document.getElementById("donorTable");
-  table.innerHTML = "";
+function renderTable(data){
+  donorTable.innerHTML = "";
 
-  data.forEach(d => {
-    table.innerHTML += `
+  data.forEach(d=>{
+    donorTable.innerHTML += `
     <tr>
       <td>${d.name}</td>
       <td>${d.bloodGroup}</td>
       <td>${d.phone}</td>
       <td>${d.city}</td>
       <td>
-        <button class="btn btn-sm btn-warning">Edit</button>
-        <button onclick="deleteDonor('${d._id}')" class="btn btn-sm btn-danger">Delete</button>
+        <button onclick="deleteDonor('${d._id}')" class="btn btn-danger btn-sm">Delete</button>
       </td>
     </tr>`;
   });
 }
 
 // DELETE
-function deleteDonor(id) {
-  if (!confirm("Delete donor?")) return;
+function deleteDonor(id){
+  if(!confirm("Delete?")) return;
 
-  fetch(`/delete-donor/${id}`, { method: "DELETE" })
-  .then(res => res.text())
-  .then(() => {
+  fetch('/delete-donor/'+id,{method:"DELETE"})
+  .then(()=>{
     loadDonors();
     loadStats();
   });
 }
 
 // SEARCH
-function searchDonor() {
+function searchDonor(){
   const bg = searchInput.value;
 
-  if (!bg) return loadDonors();
+  if(!bg) return loadDonors();
 
-  fetch(`/search?bloodGroup=${bg}`)
-  .then(res => res.json())
-  .then(data => renderTable(data));
+  fetch('/search?bloodGroup='+bg)
+  .then(res=>res.json())
+  .then(data=>renderTable(data));
 }
 
 // INIT
