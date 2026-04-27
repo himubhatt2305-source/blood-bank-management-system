@@ -2,134 +2,85 @@
 <html>
 <head>
   <title>Blood Requests</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <style>
-body {
-  margin: 0;
-
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-  url("https://images.unsplash.com/photo-1579684385127-1ef15d508118");
-
-  background-size: cover;
-  background-position: center;
-  color: white;
-}
-
-.container-box {
-  padding: 30px;
-}
-
-/* Glass Table */
-.table-box {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 20px;
-}
-
-/* Table */
-.table {
-  color: white;
-}
-
-.table thead {
-  background: rgba(255,255,255,0.2);
-}
-
-/* Buttons */
-.btn-success, .btn-danger {
-  border-radius: 8px;
-}
-
-.title {
-  font-size: 28px;
-  margin-bottom: 20px;
-}
-
-.back-btn {
-  margin-bottom: 15px;
-}
-</style>
-
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container container-box">
+<nav class="navbar navbar-dark p-3">
+  <div class="container">
+    <span class="navbar-brand">
+      <i class="fa-solid fa-list text-danger"></i> Blood Requests
+    </span>
+    <a href="donors.html" class="btn btn-light btn-sm">Back</a>
+  </div>
+</nav>
 
-  <h2 class="title"><i class="fa-solid fa-notes-medical"></i> Blood Requests</h2>
+<div class="container mt-4">
 
-  <a href="donors.html" class="btn btn-light back-btn">
-    <i class="fa-solid fa-arrow-left"></i> Back
-  </a>
+  <div class="glass">
 
-  <div class="table-box">
+    <h4 class="mb-3">Requests List</h4>
 
-    <table class="table text-center">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Blood</th>
-          <th>City</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <div class="table-responsive">
+      <table class="table table-bordered text-center">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Blood</th>
+            <th>City</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-      <tbody id="requestTable"></tbody>
+        <tbody id="requestTable"></tbody>
 
-    </table>
+      </table>
+    </div>
 
   </div>
 
 </div>
 
 <script>
+fetch('/requests')
+.then(res => res.json())
+.then(data => {
 
-function loadRequests() {
-  fetch('/requests')
-  .then(res => res.json())
-  .then(data => {
-    const table = document.getElementById("requestTable");
-    table.innerHTML = "";
+  const table = document.getElementById("requestTable");
 
-    data.forEach(r => {
-      table.innerHTML += `
+  data.forEach(r => {
+    table.innerHTML += `
       <tr>
         <td>${r.name}</td>
         <td>${r.bloodGroup}</td>
         <td>${r.city}</td>
-        <td>${r.status}</td>
+        <td>${r.status || "Pending"}</td>
         <td>
-          <button onclick="approve('${r._id}')" class="btn btn-success btn-sm">
-            ✔
-          </button>
-
-          <button onclick="reject('${r._id}')" class="btn btn-danger btn-sm">
-            ✖
-          </button>
+          <button onclick="approve('${r._id}')" class="btn btn-success btn-sm">✔</button>
+          <button onclick="reject('${r._id}')" class="btn btn-danger btn-sm">✖</button>
         </td>
-      </tr>`;
-    });
+      </tr>
+    `;
   });
+});
+
+function approve(id){
+  fetch('/accept-request/' + id, { method:'PUT' })
+  .then(()=>location.reload());
 }
 
-function approve(id) {
-  fetch(`/accept-request/${id}`, { method: "PUT" })
-  .then(() => loadRequests());
+function reject(id){
+  fetch('/reject-request/' + id, { method:'PUT' })
+  .then(()=>location.reload());
 }
-
-function reject(id) {
-  fetch(`/reject-request/${id}`, { method: "PUT" })
-  .then(() => loadRequests());
-}
-
-loadRequests();
-
 </script>
 
 </body>
