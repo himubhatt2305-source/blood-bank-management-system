@@ -7,111 +7,72 @@
 
   <style>
     body {
-      background: #f5f6fa;
+      background: #f1f3f6;
     }
 
-    .card {
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .container {
+      margin-top: 20px;
     }
 
-    .badge {
-      padding: 6px 10px;
-      border-radius: 8px;
+    @media(max-width:600px){
+      .table th, .table td {
+        font-size: 12px;
+        padding: 6px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="container">
+  <h4 class="text-danger">Blood Requests</h4>
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="text-danger">Blood Requests</h2>
-    <a href="/donors.html" class="btn btn-dark">Back</a>
-  </div>
+  <a href="donors.html" class="btn btn-dark btn-sm mb-2">⬅ Back</a>
 
-  <div class="card p-3">
-    <table class="table table-bordered">
-      <thead class="table-danger">
-        <tr>
-          <th>Name</th>
-          <th>Blood Group</th>
-          <th>City</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody id="requestTable"></tbody>
-    </table>
-  </div>
-
+  <table class="table table-bordered">
+    <thead class="table-danger">
+      <tr>
+        <th>Name</th>
+        <th>Blood Group</th>
+        <th>City</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="reqTable"></tbody>
+  </table>
 </div>
 
 <script>
+fetch('/requests')
+.then(res => res.json())
+.then(data => {
+  const table = document.getElementById("reqTable");
 
-// LOAD REQUESTS
-function loadRequests() {
-  fetch('/requests')
-  .then(res => res.json())
-  .then(data => {
-
-    const table = document.getElementById("requestTable");
-    table.innerHTML = "";
-
-    data.forEach(r => {
-
-      let badgeClass = "bg-warning text-dark";
-
-if (r.status === "Approved") badgeClass = "bg-success";
-if (r.status === "Rejected") badgeClass = "bg-danger";
-      table.innerHTML += `
-        <tr>
-          <td>${r.name}</td>
-          <td>${r.bloodGroup}</td>
-          <td>${r.city}</td>
-
-          <td>
-            <span class="badge ${badgeClass}">
-              ${r.status}
-            </span>
-          </td>
-
-          <td>
-            <button onclick="approve('${r._id}')" class="btn btn-success btn-sm">Accept</button>
-            <button onclick="reject('${r._id}')" class="btn btn-danger btn-sm">Reject</button>
-          </td>
-        </tr>
-      `;
-    });
-
+  data.forEach(r => {
+    table.innerHTML += `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.bloodGroup}</td>
+        <td>${r.city}</td>
+        <td>${r.status}</td>
+        <td>
+          <button onclick="approve('${r._id}')" class="btn btn-success btn-sm">Approve</button>
+          <button onclick="reject('${r._id}')" class="btn btn-danger btn-sm">Reject</button>
+        </td>
+      </tr>
+    `;
   });
+});
+
+function approve(id){
+  fetch('/accept-request/'+id,{method:'PUT'}).then(()=>location.reload());
 }
 
-// APPROVE
-function approve(id) {
-  fetch(`/accept-request/${id}`, { method: "PUT" })
-  .then(res => res.text())
-  .then(msg => {
-    alert(msg);
-    loadRequests();
-  });
+function reject(id){
+  fetch('/reject-request/'+id,{method:'PUT'}).then(()=>location.reload());
 }
-
-// REJECT
-function reject(id) {
-  fetch(`/reject-request/${id}`, { method: "PUT" })
-  .then(res => res.text())
-  .then(msg => {
-    alert(msg);
-    loadRequests();
-  });
-}
-
-// INITIAL LOAD
-loadRequests();
-
 </script>
 
 </body>
