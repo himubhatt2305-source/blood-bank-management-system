@@ -78,6 +78,10 @@ app.get("/donors.html", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "public/donors.html"));
 });
 
+app.get("/requests.html", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, "public/requests.html"));
+});
+
 // ---------------- ADD DONOR ----------------
 app.post('/add-donor', async (req, res) => {
   try {
