@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
+
 const app = express();
 
 // ---------------- MIDDLEWARE ----------------
@@ -10,11 +11,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ---------------- MONGODB CONNECT ----------------
-mongoose.connect(
-  process.env.MONGO_URI || "mongodb://himubhatt2305_db_user:Anshika639512@ac-jy1kdf7-shard-00-00.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-01.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-02.tpfnrr1.mongodb.net:27017/bloodbank?ssl=true&replicaSet=atlas-2pavzb-shard-0&authSource=admin&retryWrites=true&w=majority")
-.then(() => console.log("DB Connected ✔"))
-.catch(err => console.log("DB Error:", err));
+// ---------------- MONGO URL (IMPORTANT) ----------------
+const MONGO_URL = process.env.MONGO_URI;
+
+if (!MONGO_URL) {
+  console.log("❌ MONGO_URI not found. Set it in environment variables.");
+  process.exit(1);
+}
+
+// ---------------- DB CONNECT ----------------
+mongoose.connect(MONGO_URL)
+  .then(() => console.log("DB Connected ✔"))
+  .catch(err => console.log("DB Error:", err));
 
 // ---------------- SESSION ----------------
 app.use(session({
@@ -22,7 +30,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI || "mongodb://himubhatt2305_db_user:Anshika639512@ac-jy1kdf7-shard-00-00.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-01.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-02.tpfnrr1.mongodb.net:27017/bloodbank?ssl=true&replicaSet=atlas-2pavzb-shard-0&authSource=admin&retryWrites=true&w=majority"
+    mongoUrl: MONGO_URL
   })
 }));
 
@@ -93,8 +101,8 @@ app.get('/search', async (req, res) => {
   if (!bg) return res.json([]);
 
   bg = decodeURIComponent(bg).trim().toUpperCase();
-
   const donors = await Donor.find({ bloodGroup: bg });
+
   res.json(donors);
 });
 
@@ -133,12 +141,16 @@ app.get('/requests', async (req, res) => {
 
 // ---------------- APPROVE / REJECT ----------------
 app.put('/accept-request/:id', async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, { status: "Approved" });
+  await Request.findByIdAndUpdate(req.params.id, {
+    status: "Approved"
+  });
   res.send("Request Approved ✅");
 });
 
 app.put('/reject-request/:id', async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, { status: "Rejected" });
+  await Request.findByIdAndUpdate(req.params.id, {
+    status: "Rejected"
+  });
   res.send("Request Rejected ❌");
 });
 
