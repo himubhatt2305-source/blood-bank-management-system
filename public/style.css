@@ -1,0 +1,44 @@
+/* ---------- DASHBOARD LAYOUT ---------- */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  padding: 15px;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- ICONS ---------- */
+.icon {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+}
