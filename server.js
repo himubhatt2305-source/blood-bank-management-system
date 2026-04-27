@@ -21,7 +21,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI
+    mongoUrl: process.env.MONGO_URI || "mongodb://himubhatt2305_db_user:Anshika639512@ac-jy1kdf7-shard-00-00.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-01.tpfnrr1.mongodb.net:27017,ac-jy1kdf7-shard-00-02.tpfnrr1.mongodb.net:27017/bloodbank?ssl=true&replicaSet=atlas-2pavzb-shard-0&authSource=admin&retryWrites=true&w=majority"
   })
 }));
 
