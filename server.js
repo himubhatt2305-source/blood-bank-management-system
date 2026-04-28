@@ -110,12 +110,17 @@ app.get('/donors', isLoggedIn, async (req, res) => {
 
 // SEARCH DONOR
 app.get('/search', isLoggedIn, async (req, res) => {
-  let bg = req.query.bloodGroup;
+  const q = req.query.q?.trim();
 
-  if (!bg) return res.json([]);
+  if (!q) return res.json([]);
 
-  bg = decodeURIComponent(bg).trim().toUpperCase();
-  const donors = await Donor.find({ bloodGroup: bg });
+  const donors = await Donor.find({
+    $or: [
+      { name: { $regex: q, $options: "i" } },
+      { city: { $regex: q, $options: "i" } },
+      { bloodGroup: { $regex: q, $options: "i" } }
+    ]
+  });
 
   res.json(donors);
 });
@@ -172,6 +177,12 @@ app.put('/reject-request/:id', isAdmin, async (req, res) => {
     status: "Rejected"
   });
   res.json({ success: true });
+});
+
+app.get('/me', (req, res) => {
+  res.json({
+    user: req.session.user || null
+  });
 });
 
 /* ---------------- SERVER ---------------- */
