@@ -263,7 +263,10 @@ function filterGender(type){
     return;
   }
 
-  const filtered = allDonors.filter(d => d.gender === type);
+  const filtered = allDonors.filter(d =>
+    (d.gender || "").trim().toLowerCase() === type.toLowerCase()
+  );
+
   renderTable(filtered);
 }
 
