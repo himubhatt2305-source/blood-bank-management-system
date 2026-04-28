@@ -12,6 +12,7 @@ body {
   color: white;
 }
 
+/* DARK OVERLAY BG */
 body::before {
   content: "";
   position: fixed;
@@ -28,7 +29,10 @@ body::before {
   height: 100%;
   background: #111;
   padding-top: 20px;
+  top: 0;
+  left: 0;
   z-index: 1000;
+  transition: 0.3s;
 }
 
 .sidebar h4 {
@@ -106,6 +110,22 @@ body::before {
   overflow: hidden;
 }
 
+/* ---------- OVERLAY (FIX MOBILE BUG) ---------- */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 900;
+}
+
+#overlay.active {
+  display: block;
+}
+
 /* ---------- MOBILE ---------- */
 .menu-btn {
   display: none;
@@ -114,6 +134,7 @@ body::before {
 }
 
 @media(max-width:768px){
+
   .sidebar {
     left: -240px;
   }
