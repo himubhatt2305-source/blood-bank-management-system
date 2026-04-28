@@ -2,10 +2,10 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
- background: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center center/cover;
+  background: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center/cover;
+  color: white;
 }
 
-/* DARK OVERLAY */
 body::before {
   content: "";
   position: fixed;
@@ -21,98 +21,115 @@ body::before {
   backdrop-filter: blur(10px);
 }
 
-/* ---------- DASHBOARD GRID ---------- */
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  position: fixed;
+  width: 240px;
+  height: 100%;
+  background: #111;
+  padding-top: 20px;
+  transition: 0.3s;
+  z-index: 1000;
+}
+
+.sidebar h4 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 14px 20px;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.sidebar a:hover {
+  background: #dc3545;
+  color: white;
+}
+
+/* ---------- CONTENT ---------- */
+.content {
+  margin-left: 240px;
   padding: 20px;
 }
 
-/* ---------- GLASS CARDS ---------- */
+/* ---------- CARDS ---------- */
 .card {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(15px);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
   border-radius: 15px;
   padding: 20px;
   text-align: center;
   color: white;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
   transition: 0.3s;
 }
 
 .card:hover {
-  transform: translateY(-5px) scale(1.03);
+  transform: translateY(-5px);
 }
 
 /* ---------- ICONS ---------- */
-.icon {
-  font-size: 28px;
+.card i {
+  font-size: 32px;
   margin-bottom: 10px;
-}
-
-/* ---------- GLASS BOX ---------- */
-.glass {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(15px);
-  border-radius: 15px;
-  padding: 20px;
-  color: white;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
 /* ---------- BUTTON ---------- */
 .btn-red {
-  background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
+  background: #dc3545;
   border: none;
   color: white;
-  border-radius: 30px;
-  padding: 10px 20px;
-  transition: 0.3s;
+  border-radius: 25px;
+  padding: 10px;
 }
 
 .btn-red:hover {
-  transform: scale(1.05);
+  background: #bb2d3b;
 }
 
 /* ---------- TABLE ---------- */
 .table {
-  color: white;
-}
-
-.table thead {
-  background: rgba(255,0,0,0.3);
+  background: white;
+  color: black;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 /* ---------- FORM ---------- */
 .form-control,
 .form-select {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: white;
-}
-
-.form-control::placeholder {
-  color: #ddd;
+  border-radius: 10px;
 }
 
 /* ---------- MOBILE ---------- */
-@media (max-width: 768px) {
+.menu-btn {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
 
-  .dashboard {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+@media(max-width:768px){
+
+  .sidebar {
+    left: -240px;
   }
 
-  .icon {
-    font-size: 20px;
+  .sidebar.active {
+    left: 0;
   }
 
-  .card {
-    padding: 12px;
+  .content {
+    margin-left: 0;
   }
 
-  .glass {
-    margin: 10px;
+  .menu-btn {
+    display: block;
+  }
+
+  .card i {
+    font-size: 26px;
   }
 }
