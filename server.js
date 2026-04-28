@@ -54,7 +54,7 @@ app.post("/login", (req, res) => {
 
   if (username === "admin" && password === "1234") {
     req.session.user = username;
-    return res.redirect("/donors.html");
+    return res.redirect("/");
   }
 
   res.send("Invalid credentials");
