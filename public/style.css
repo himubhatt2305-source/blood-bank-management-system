@@ -1,24 +1,25 @@
 /* ---------- GLOBAL ---------- */
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+body {
   font-family: 'Poppins', sans-serif;
   background: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center/cover;
   color: white;
 }
 
+/* DARK OVERLAY */
 body::before {
   content: "";
   position: fixed;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.65);
-  z-index: -1;
-}
-
-/* ---------- NAVBAR ---------- */
-.navbar {
   background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(10px);
+  z-index: -1;
 }
 
 /* ---------- SIDEBAR ---------- */
@@ -28,6 +29,8 @@ body::before {
   height: 100%;
   background: #111;
   padding-top: 20px;
+  left: 0;
+  top: 0;
   transition: 0.3s;
   z-index: 1000;
 }
@@ -40,7 +43,7 @@ body::before {
 .sidebar a {
   display: block;
   padding: 14px 20px;
-  color: #ddd;
+  color: #ccc;
   text-decoration: none;
   font-size: 16px;
 }
@@ -59,16 +62,17 @@ body::before {
 /* ---------- CARDS ---------- */
 .card {
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(15px);
   border-radius: 15px;
   padding: 20px;
   text-align: center;
   color: white;
-  transition: 0.3s;
+  border: none;
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 /* ---------- ICONS ---------- */
@@ -77,13 +81,20 @@ body::before {
   margin-bottom: 10px;
 }
 
+/* ---------- GLASS ---------- */
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 20px;
+}
+
 /* ---------- BUTTON ---------- */
 .btn-red {
-  background: #dc3545;
+  background: linear-gradient(45deg, #ff4d4d, #dc3545);
   border: none;
   color: white;
   border-radius: 25px;
-  padding: 10px;
 }
 
 .btn-red:hover {
@@ -98,9 +109,12 @@ body::before {
   overflow: hidden;
 }
 
-/* ---------- FORM ---------- */
-.form-control,
-.form-select {
+/* ---------- SCROLLBAR ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #dc3545;
   border-radius: 10px;
 }
 
