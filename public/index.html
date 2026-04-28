@@ -3,18 +3,28 @@
 <head>
   <title>Blood Bank</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- BOOTSTRAP -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
-  
+  <!-- ICONS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
   <style>
+
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+
+      /* FIXED BACKGROUND ISSUE */
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
       url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5');
+
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
+
       height: 100vh;
       display: flex;
       justify-content: center;
@@ -22,22 +32,58 @@
     }
 
     .main-box {
-      background: rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.6);
       backdrop-filter: blur(12px);
-      padding: 25px;
-      border-radius: 15px;
+      padding: 30px;
+      border-radius: 20px;
       text-align: center;
       width: 90%;
       max-width: 350px;
       color: white;
     }
 
-    .btn-custom {
-      border-radius: 25px;
-      padding: 10px;
-      margin: 8px;
-      width: 100%;
+    .main-box h3 {
+      font-size: 26px;
+      margin-bottom: 10px;
     }
+
+    .main-box p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* BIG BUTTONS */
+    .btn-custom {
+      border-radius: 30px;
+      padding: 14px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* BIG ICONS */
+    .btn-custom i {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+
+    /* MOBILE IMPROVEMENT */
+    @media(max-width:768px){
+      .main-box {
+        padding: 25px;
+      }
+
+      .btn-custom {
+        font-size: 15px;
+        padding: 12px;
+      }
+
+      .btn-custom i {
+        font-size: 20px;
+      }
+    }
+
   </style>
 </head>
 
@@ -47,9 +93,17 @@
   <h3>🩸 Blood Bank System</h3>
   <p>Donate Blood ❤️ Save Lives</p>
 
-  <a href="donors.html" class="btn btn-light btn-custom">🔍 Find Donors</a>
-  <a href="donate.html" class="btn btn-outline-light btn-custom">❤️ Donate Blood</a>
-  <a href="request.html" class="btn btn-danger btn-custom">🩸 Request Blood</a>
+  <a href="donors.html" class="btn btn-light btn-custom">
+    <i class="fa-solid fa-magnifying-glass"></i> Find Donors
+  </a>
+
+  <a href="donate.html" class="btn btn-outline-light btn-custom">
+    <i class="fa-solid fa-heart"></i> Donate Blood
+  </a>
+
+  <a href="request.html" class="btn btn-danger btn-custom">
+    <i class="fa-solid fa-droplet"></i> Request Blood
+  </a>
 </div>
 
 </body>
