@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* ---------------- MONGO ---------------- */
+/* ---------------- DB ---------------- */
 const MONGO_URL = process.env.MONGO_URI;
 
 if (!MONGO_URL) {
@@ -46,22 +46,18 @@ function isLoggedIn(req, res, next) {
 
 function isAdmin(req, res, next) {
   if (req.session.user === "admin") return next();
-  res.status(403).send("Access Denied");
+  return res.status(403).send("Access Denied");
 }
 
-/* ---------------- ROUTES ---------------- */
-
-// HOME
+/* ---------------- PAGES ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-// LOGIN PAGE
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public/login.html"));
 });
 
-// LOGIN
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -73,15 +69,11 @@ app.post("/login", (req, res) => {
   res.send("Invalid credentials");
 });
 
-// LOGOUT
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
-  });
+  req.session.destroy(() => res.redirect("/login"));
 });
 
 /* ---------------- PROTECTED PAGES ---------------- */
-
 app.get("/donors.html", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "public/donors.html"));
 });
@@ -91,103 +83,69 @@ app.get("/requests.html", isLoggedIn, (req, res) => {
 });
 
 /* ---------------- DONORS ---------------- */
-
-// ADD DONOR
-app.post('/add-donor', isLoggedIn, async (req, res) => {
-  try {
-    await Donor.create(req.body);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
-});
-
-// GET DONORS
 app.get('/donors', isLoggedIn, async (req, res) => {
   const donors = await Donor.find();
   res.json(donors);
 });
 
-// SEARCH DONOR
+/* SEARCH (FIXED) */
 app.get('/search', isLoggedIn, async (req, res) => {
   const q = req.query.q?.trim();
-
   if (!q) return res.json([]);
 
   const donors = await Donor.find({
     $or: [
       { name: { $regex: q, $options: "i" } },
       { city: { $regex: q, $options: "i" } },
-      { bloodGroup: { $regex: q, $options: "i" } }
+      { bloodGroup: { $regex: q, $options: "i" } },
+      { gender: { $regex: q, $options: "i" } }
     ]
   });
 
   res.json(donors);
 });
 
-// UPDATE DONOR (ADMIN ONLY)
-app.put('/update-donor/:id', isAdmin, async (req, res) => {
-  try {
-    await Donor.findByIdAndUpdate(req.params.id, req.body);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
+/* GENDER FILTER */
+app.get('/filter-gender', isLoggedIn, async (req, res) => {
+  const gender = req.query.gender;
+  if (!gender) return res.json([]);
+
+  const donors = await Donor.find({ gender });
+  res.json(donors);
 });
 
-// DELETE DONOR (ADMIN ONLY)
+/* DELETE (ADMIN ONLY) */
 app.delete('/delete-donor/:id', isAdmin, async (req, res) => {
-  try {
-    await Donor.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
+  await Donor.findByIdAndDelete(req.params.id);
+  res.json({ success: true });
 });
 
-/* ---------------- REQUESTS ---------------- */
-
-// ADD REQUEST
+/* REQUESTS */
 app.post('/add-request', async (req, res) => {
-  try {
-    await Request.create(req.body);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
+  await Request.create(req.body);
+  res.json({ success: true });
 });
 
-// GET REQUESTS
 app.get('/requests', isLoggedIn, async (req, res) => {
   const data = await Request.find();
   res.json(data);
 });
 
-// APPROVE REQUEST (ADMIN ONLY)
 app.put('/accept-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, {
-    status: "Approved"
-  });
+  await Request.findByIdAndUpdate(req.params.id, { status: "Approved" });
   res.json({ success: true });
 });
 
-// REJECT REQUEST (ADMIN ONLY)
 app.put('/reject-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, {
-    status: "Rejected"
-  });
+  await Request.findByIdAndUpdate(req.params.id, { status: "Rejected" });
   res.json({ success: true });
 });
 
+/* SESSION CHECK */
 app.get('/me', (req, res) => {
-  res.json({
-    user: req.session.user || null
-  });
+  res.json({ user: req.session.user || null });
 });
 
-/* ---------------- SERVER ---------------- */
+/* SERVER */
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log("Server running on port", PORT));
