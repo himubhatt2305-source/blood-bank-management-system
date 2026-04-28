@@ -17,7 +17,7 @@
 <div class="sidebar" id="sidebar">
   <h4>🩸 Blood Bank</h4>
   <a href="#">Dashboard</a>
-  <a href="requests.html">Requests</a>
+  <a href="request.html">Requests</a>
   <a href="#">Donors</a>
   <a href="/logout">Logout</a>
 </div>
@@ -71,7 +71,14 @@
 </div>
 
 <!-- SEARCH -->
-<input id="liveSearch" class="form-control mt-3 mb-3" placeholder="Search donors...">
+<input id="liveSearch" class="form-control mt-3 mb-2" placeholder="Search donors...">
+
+<!-- 🔥 NEW FILTER BUTTONS (MALE / FEMALE) -->
+<div class="mb-3 d-flex gap-2">
+  <button class="btn btn-primary btn-sm" onclick="filterGender('All')">All</button>
+  <button class="btn btn-info btn-sm" onclick="filterGender('Male')">Male</button>
+  <button class="btn btn-danger btn-sm" onclick="filterGender('Female')">Female</button>
+</div>
 
 <!-- TABLE -->
 <div class="table-responsive">
@@ -107,22 +114,31 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* GLOBAL */
-let allDonors=[];
+/* DATA */
+let allDonors = [];
+let isAdmin = false;
+
+/* CHECK ADMIN */
+fetch('/me')
+.then(r=>r.json())
+.then(data=>{
+  isAdmin = data.user === "admin";
+});
 
 /* TOAST */
 function showToast(msg){
-  const div=document.createElement("div");
-  div.className="alert alert-success";
-  div.innerText=msg;
+  const div = document.createElement("div");
+  div.className = "alert alert-success";
+  div.innerText = msg;
   toastBox.appendChild(div);
-  setTimeout(()=>div.remove(),3000);
+  setTimeout(()=>div.remove(), 3000);
 }
 
 /* COUNTER */
 function animateCount(id,end){
   let start=0;
   const step=Math.ceil(end/30);
+
   const interval=setInterval(()=>{
     start+=step;
     if(start>=end){
@@ -133,40 +149,49 @@ function animateCount(id,end){
   },20);
 }
 
-/* LOAD */
+/* LOAD DONORS */
 function loadDonors(){
   fetch('/donors')
   .then(res=>res.json())
   .then(data=>{
-    allDonors=data;
-    animateCount("totalDonors",data.length);
+    allDonors = data;
+    animateCount("totalDonors", data.length);
     renderTable(data);
   });
 }
 
+/* LOAD STATS */
 function loadStats(){
   fetch('/requests')
   .then(res=>res.json())
   .then(data=>{
-    animateCount("totalRequests",data.length);
-    animateCount("approvedCount",data.filter(r=>r.status==="Approved").length);
-    animateCount("pendingCount",data.filter(r=>r.status==="Pending").length);
+    animateCount("totalRequests", data.length);
+    animateCount("approvedCount", data.filter(r=>r.status==="Approved").length);
+    animateCount("pendingCount", data.filter(r=>r.status==="Pending").length);
   });
 }
 
 /* TABLE */
 function renderTable(data){
-  donorTable.innerHTML="";
+  donorTable.innerHTML = "";
+
   data.forEach(d=>{
-    donorTable.innerHTML+=`
+    donorTable.innerHTML += `
     <tr>
       <td>${d.name}</td>
       <td>${d.bloodGroup}</td>
       <td>${d.phone}</td>
       <td>${d.city}</td>
       <td>
-        <button onclick="editDonor('${d._id}','${d.name}','${d.phone}','${d.city}','${d.bloodGroup}')" class="btn btn-warning btn-sm">Edit</button>
-        <button onclick="deleteDonor('${d._id}')" class="btn btn-danger btn-sm">Delete</button>
+        ${isAdmin ? `
+          <button class="btn btn-warning btn-sm"
+          onclick="editDonor('${d._id}','${d.name}','${d.phone}','${d.city}','${d.bloodGroup}')">
+          Edit</button>
+
+          <button class="btn btn-danger btn-sm"
+          onclick="deleteDonor('${d._id}')">
+          Delete</button>
+        ` : `<span class="text-muted">View Only</span>`}
       </td>
     </tr>`;
   });
@@ -174,9 +199,14 @@ function renderTable(data){
 
 /* DELETE */
 function deleteDonor(id){
+  if(!isAdmin){
+    alert("Only admin can delete");
+    return;
+  }
+
   fetch('/delete-donor/'+id,{method:"DELETE"})
   .then(()=>{
-    showToast("Deleted");
+    showToast("Deleted Successfully");
     loadDonors();
     loadStats();
   });
@@ -185,17 +215,22 @@ function deleteDonor(id){
 /* EDIT */
 function editDonor(id,name,phone,city,bloodGroup){
 
-  const newName = prompt("Edit Name", name);
-  const newPhone = prompt("Edit Phone", phone);
-  const newCity = prompt("Edit City", city);
-  const newBlood = prompt("Edit Blood Group", bloodGroup);
+  if(!isAdmin){
+    alert("Only admin can edit");
+    return;
+  }
+
+  const newName = prompt("Name", name);
+  const newPhone = prompt("Phone", phone);
+  const newCity = prompt("City", city);
+  const newBlood = prompt("Blood Group", bloodGroup);
 
   if(!newName || !newPhone || !newCity || !newBlood) return;
 
   fetch('/update-donor/'+id,{
     method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
       name:newName,
       phone:newPhone,
       city:newCity,
@@ -203,21 +238,34 @@ function editDonor(id,name,phone,city,bloodGroup){
     })
   })
   .then(()=>{
-    showToast("Updated");
+    showToast("Updated Successfully");
     loadDonors();
   });
 }
 
 /* SEARCH */
 liveSearch.addEventListener("input",function(){
-  const q=this.value.toLowerCase();
-  const filtered=allDonors.filter(d=>
+  const q = this.value.toLowerCase();
+
+  const filtered = allDonors.filter(d =>
     d.name.toLowerCase().includes(q) ||
     d.city.toLowerCase().includes(q) ||
     d.phone.includes(q)
   );
+
   renderTable(filtered);
 });
+
+/* GENDER FILTER */
+function filterGender(type){
+  if(type === "All"){
+    renderTable(allDonors);
+    return;
+  }
+
+  const filtered = allDonors.filter(d => d.gender === type);
+  renderTable(filtered);
+}
 
 /* INIT */
 loadDonors();
