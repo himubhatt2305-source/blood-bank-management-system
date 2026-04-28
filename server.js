@@ -3,28 +3,29 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo").default;
 
 const app = express();
 
-/* ---------------- MIDDLEWARE ---------------- */
+// ---------------- MIDDLEWARE ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* ---------------- MONGO ---------------- */
+// ---------------- MONGO URL (IMPORTANT) ----------------
 const MONGO_URL = process.env.MONGO_URI;
 
 if (!MONGO_URL) {
-  console.log("❌ MONGO_URI not found");
+  console.log("❌ MONGO_URI not found. Set it in environment variables.");
   process.exit(1);
 }
 
+// ---------------- DB CONNECT ----------------
 mongoose.connect(MONGO_URL)
   .then(() => console.log("DB Connected ✔"))
   .catch(err => console.log("DB Error:", err));
 
-/* ---------------- SESSION ---------------- */
+// ---------------- SESSION ----------------
 app.use(session({
   secret: "bloodbank_secret_key",
   resave: false,
@@ -34,16 +35,16 @@ app.use(session({
   })
 }));
 
-/* ---------------- MODELS ---------------- */
+// ---------------- MODELS ----------------
 const Donor = require('./models/donors');
 const Request = require('./models/request');
 
-/* ---------------- HOME ---------------- */
+// ---------------- HOME ----------------
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- LOGIN ---------------- */
+// ---------------- LOGIN ----------------
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public/login.html"));
 });
@@ -53,26 +54,26 @@ app.post("/login", (req, res) => {
 
   if (username === "admin" && password === "1234") {
     req.session.user = username;
-    return res.redirect("/donors.html"); // ✅ better redirect
-  }
+    return res.redirect("/"); 
+   }
 
   res.send("Invalid credentials");
 });
 
-/* ---------------- LOGOUT ---------------- */
+// ---------------- LOGOUT ----------------
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
 
-/* ---------------- AUTH ---------------- */
+// ---------------- AUTH ----------------
 function isLoggedIn(req, res, next) {
   if (req.session.user) next();
   else res.redirect("/login");
 }
 
-/* ---------------- PROTECTED PAGES ---------------- */
+// ---------------- PROTECTED PAGE ----------------
 app.get("/donors.html", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "public/donors.html"));
 });
@@ -81,25 +82,24 @@ app.get("/requests.html", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "public/requests.html"));
 });
 
-/* ---------------- DONORS ---------------- */
-
-// ADD DONOR
+// ---------------- ADD DONOR ----------------
 app.post('/add-donor', async (req, res) => {
   try {
-    await Donor.create(req.body);
-    res.json({ success: true }); // ✅ for fetch()
+    const donor = new Donor(req.body);
+    await donor.save();
+    res.send("Donor Saved ✅");
   } catch (err) {
-    res.status(500).json({ success: false });
+    res.status(500).send("Error saving donor");
   }
 });
 
-// GET DONORS
+// ---------------- GET DONORS ----------------
 app.get('/donors', async (req, res) => {
   const donors = await Donor.find();
   res.json(donors);
 });
 
-// SEARCH
+// ---------------- SEARCH ----------------
 app.get('/search', async (req, res) => {
   let bg = req.query.bloodGroup;
 
@@ -111,53 +111,55 @@ app.get('/search', async (req, res) => {
   res.json(donors);
 });
 
-// UPDATE
+// ---------------- UPDATE ----------------
 app.put('/update-donor/:id', async (req, res) => {
   await Donor.findByIdAndUpdate(req.params.id, req.body);
-  res.json({ success: true });
+  res.send("Donor Updated ✅");
 });
 
-// DELETE
+// ---------------- DELETE ----------------
 app.delete('/delete-donor/:id', async (req, res) => {
   await Donor.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+  res.send("Donor Deleted ✅");
 });
 
-/* ---------------- REQUESTS ---------------- */
-
-// ✅ FIXED ROUTE NAME (IMPORTANT)
-app.post('/add-request', async (req, res) => {
+// ---------------- REQUEST ----------------
+app.post('/request-blood', async (req, res) => {
   try {
-    await Request.create(req.body);
-    res.json({ success: true }); // works with fetch
+    const request = new Request(req.body);
+    await request.save();
+    res.send("Request Saved ✅");
   } catch (err) {
-    res.status(500).json({ success: false });
+    res.status(500).send("Error saving request");
   }
 });
 
-// GET REQUESTS
+// ---------------- GET REQUESTS ----------------
 app.get('/requests', async (req, res) => {
-  const data = await Request.find();
-  res.json(data);
+  try {
+    const data = await Request.find();
+    res.json(data);
+  } catch (err) {
+    res.status(500).send("Error fetching requests");
+  }
 });
 
-// APPROVE
+// ---------------- APPROVE / REJECT ----------------
 app.put('/accept-request/:id', async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Approved"
   });
-  res.json({ success: true });
+  res.send("Request Approved ✅");
 });
 
-// REJECT
 app.put('/reject-request/:id', async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Rejected"
   });
-  res.json({ success: true });
+  res.send("Request Rejected ❌");
 });
 
-/* ---------------- SERVER ---------------- */
+// ---------------- PORT ----------------
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
