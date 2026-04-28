@@ -15,28 +15,53 @@
   <div class="glass col-md-5">
 
     <h3 class="text-center mb-4">🩸 Request Blood</h3>
+    <div id="successMsg" class="alert alert-success text-center" style="display:none;">
+        ✅ Request submitted successfully!
+    </div>
+    <form id="requestForm">
 
-    <form action="/add-request" method="POST">
+  <input type="text" name="name" class="form-control mb-3" placeholder="Patient Name" required>
 
-      <input type="text" name="name" class="form-control mb-3" placeholder="Patient Name" required>
+  <select name="bloodGroup" class="form-select mb-3" required>
+    <option value="">Select Blood Group</option>
+    <option>A+</option><option>A-</option>
+    <option>B+</option><option>B-</option>
+    <option>O+</option><option>O-</option>
+    <option>AB+</option><option>AB-</option>
+  </select>
 
-      <select name="bloodGroup" class="form-select mb-3" required>
-        <option value="">Select Blood Group</option>
-        <option>A+</option><option>A-</option>
-        <option>B+</option><option>B-</option>
-        <option>O+</option><option>O-</option>
-        <option>AB+</option><option>AB-</option>
-      </select>
+  <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
 
-      <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
+  <button class="btn btn-danger w-100">Submit Request</button>
 
-      <button class="btn btn-danger w-100">Submit Request</button>
-
-    </form>
+</form>
 
   </div>
 
 </div>
+<script>
+const form = document.getElementById("requestForm");
+const successMsg = document.getElementById("successMsg");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  fetch('/add-request', {
+    method: 'POST',
+    body: formData
+  })
+  .then(()=>{
+    successMsg.style.display = "block";
+    form.reset();
+
+    setTimeout(()=>{
+      successMsg.style.display = "none";
+    }, 3000);
+  });
+});
+</script>
 
 </body>
 </html>
