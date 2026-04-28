@@ -17,7 +17,7 @@
 <div class="sidebar" id="sidebar">
   <h4>🩸 Blood Bank</h4>
   <a href="#">Dashboard</a>
-  <a href="request.html">Requests</a>
+  <a href="requests.html">Requests</a>
   <a href="#">Donors</a>
   <a href="/logout">Logout</a>
 </div>
@@ -25,9 +25,9 @@
 <!-- OVERLAY -->
 <div id="overlay" onclick="toggleSidebar()"></div>
 
-<!-- CONTENT -->
 <div class="content">
 
+<!-- TOP -->
 <div class="d-flex justify-content-between align-items-center mb-3">
   <span class="menu-btn" onclick="toggleSidebar()">☰</span>
 
@@ -37,12 +37,9 @@
   </div>
 </div>
 
-<div class="glass mb-4">
-  <h3>👋 Welcome Admin</h3>
-</div>
-
 <!-- CARDS -->
 <div class="row text-center">
+
   <div class="col-6 col-md-3 mb-3">
     <div class="card card-red">
       <h4 id="totalDonors">0</h4>
@@ -70,10 +67,11 @@
       <p>Pending</p>
     </div>
   </div>
+
 </div>
 
 <!-- SEARCH -->
-<input id="liveSearch" class="form-control mt-3 mb-3" placeholder="Search...">
+<input id="liveSearch" class="form-control mt-3 mb-3" placeholder="Search donors...">
 
 <!-- TABLE -->
 <div class="table-responsive">
@@ -94,7 +92,7 @@
 </div>
 
 <!-- TOAST -->
-<div id="toastBox"></div>
+<div id="toastBox" style="position:fixed; bottom:20px; right:20px;"></div>
 
 <script>
 
@@ -109,13 +107,8 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* DATA */
+/* GLOBAL */
 let allDonors=[];
-
-/* LOADING */
-function showLoading(){
-  donorTable.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
-}
 
 /* TOAST */
 function showToast(msg){
@@ -142,7 +135,6 @@ function animateCount(id,end){
 
 /* LOAD */
 function loadDonors(){
-  showLoading();
   fetch('/donors')
   .then(res=>res.json())
   .then(data=>{
@@ -173,6 +165,7 @@ function renderTable(data){
       <td>${d.phone}</td>
       <td>${d.city}</td>
       <td>
+        <button onclick="editDonor('${d._id}','${d.name}','${d.phone}','${d.city}','${d.bloodGroup}')" class="btn btn-warning btn-sm">Edit</button>
         <button onclick="deleteDonor('${d._id}')" class="btn btn-danger btn-sm">Delete</button>
       </td>
     </tr>`;
@@ -186,6 +179,32 @@ function deleteDonor(id){
     showToast("Deleted");
     loadDonors();
     loadStats();
+  });
+}
+
+/* EDIT */
+function editDonor(id,name,phone,city,bloodGroup){
+
+  const newName = prompt("Edit Name", name);
+  const newPhone = prompt("Edit Phone", phone);
+  const newCity = prompt("Edit City", city);
+  const newBlood = prompt("Edit Blood Group", bloodGroup);
+
+  if(!newName || !newPhone || !newCity || !newBlood) return;
+
+  fetch('/update-donor/'+id,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      name:newName,
+      phone:newPhone,
+      city:newCity,
+      bloodGroup:newBlood
+    })
+  })
+  .then(()=>{
+    showToast("Updated");
+    loadDonors();
   });
 }
 
