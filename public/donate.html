@@ -31,33 +31,59 @@
 
     <h3 class="text-center mb-4">
       ❤️ Save Lives
-    </h3>
+    </h3> 
 
-    <form action="/add-donor" method="POST">
+    <div id="successMsg" class="alert alert-success text-center" style="display:none;">
+  ❤️ Donor added successfully!
+</div>
 
-      <input type="text" name="name" class="form-control mb-3" placeholder="Name" required>
+    <form id="donorForm">
 
-      <select name="bloodGroup" class="form-select mb-3" required>
-        <option value="">Select Blood Group</option>
-        <option>A+</option><option>A-</option>
-        <option>B+</option><option>B-</option>
-        <option>O+</option><option>O-</option>
-        <option>AB+</option><option>AB-</option>
-      </select>
+  <input type="text" name="name" class="form-control mb-3" placeholder="Name" required>
 
-      <input type="text" name="phone" class="form-control mb-3" placeholder="Phone" required>
+  <select name="bloodGroup" class="form-select mb-3" required>
+    <option value="">Select Blood Group</option>
+    <option>A+</option><option>A-</option>
+    <option>B+</option><option>B-</option>
+    <option>O+</option><option>O-</option>
+    <option>AB+</option><option>AB-</option>
+  </select>
 
-      <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
+  <input type="text" name="phone" class="form-control mb-3" placeholder="Phone" required>
 
-      <button class="btn btn-red w-100">
-        <i class="fa-solid fa-heart"></i> Submit
-      </button>
+  <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
 
-    </form>
+  <button class="btn btn-red w-100">
+    ❤️ Submit
+  </button>
 
+</form>
   </div>
 
 </div>
+<script>
+const form = document.getElementById("donorForm");
+const successMsg = document.getElementById("successMsg");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  fetch('/add-donor', {
+    method: 'POST',
+    body: formData
+  })
+  .then(()=>{
+    successMsg.style.display = "block";
+    form.reset();
+
+    setTimeout(()=>{
+      successMsg.style.display = "none";
+    }, 3000);
+  });
+});
+</script>
 
 </body>
 </html>
