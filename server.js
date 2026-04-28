@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
+
 const app = express();
 
 /* ---------------- MIDDLEWARE ---------------- */
@@ -28,7 +29,7 @@ app.use(session({
   secret: "bloodbank_secret_key",
   resave: false,
   saveUninitialized: false,
-  store: new MongoStore({
+  store: MongoStore.create({
     mongoUrl: MONGO_URL
   })
 }));
@@ -39,8 +40,13 @@ const Request = require('./models/request');
 
 /* ---------------- AUTH ---------------- */
 function isLoggedIn(req, res, next) {
-  if (req.session.user) next();
-  else res.redirect("/login");
+  if (req.session.user) return next();
+  res.redirect("/login");
+}
+
+function isAdmin(req, res, next) {
+  if (req.session.user === "admin") return next();
+  res.status(403).send("Access Denied");
 }
 
 /* ---------------- ROUTES ---------------- */
@@ -60,7 +66,7 @@ app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === "admin" && password === "1234") {
-    req.session.user = username;
+    req.session.user = "admin";
     return res.redirect("/donors.html");
   }
 
@@ -74,7 +80,8 @@ app.get("/logout", (req, res) => {
   });
 });
 
-// PROTECTED PAGES
+/* ---------------- PROTECTED PAGES ---------------- */
+
 app.get("/donors.html", isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, "public/donors.html"));
 });
@@ -86,23 +93,23 @@ app.get("/requests.html", isLoggedIn, (req, res) => {
 /* ---------------- DONORS ---------------- */
 
 // ADD DONOR
-app.post('/add-donor', async (req, res) => {
+app.post('/add-donor', isLoggedIn, async (req, res) => {
   try {
     await Donor.create(req.body);
     res.json({ success: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false });
   }
 });
 
 // GET DONORS
-app.get('/donors', async (req, res) => {
+app.get('/donors', isLoggedIn, async (req, res) => {
   const donors = await Donor.find();
   res.json(donors);
 });
 
 // SEARCH DONOR
-app.get('/search', async (req, res) => {
+app.get('/search', isLoggedIn, async (req, res) => {
   let bg = req.query.bloodGroup;
 
   if (!bg) return res.json([]);
@@ -113,8 +120,8 @@ app.get('/search', async (req, res) => {
   res.json(donors);
 });
 
-// UPDATE DONOR
-app.put('/update-donor/:id', async (req, res) => {
+// UPDATE DONOR (ADMIN ONLY)
+app.put('/update-donor/:id', isAdmin, async (req, res) => {
   try {
     await Donor.findByIdAndUpdate(req.params.id, req.body);
     res.json({ success: true });
@@ -123,8 +130,8 @@ app.put('/update-donor/:id', async (req, res) => {
   }
 });
 
-// DELETE DONOR
-app.delete('/delete-donor/:id', async (req, res) => {
+// DELETE DONOR (ADMIN ONLY)
+app.delete('/delete-donor/:id', isAdmin, async (req, res) => {
   try {
     await Donor.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -146,21 +153,21 @@ app.post('/add-request', async (req, res) => {
 });
 
 // GET REQUESTS
-app.get('/requests', async (req, res) => {
+app.get('/requests', isLoggedIn, async (req, res) => {
   const data = await Request.find();
   res.json(data);
 });
 
-// APPROVE REQUEST
-app.put('/accept-request/:id', async (req, res) => {
+// APPROVE REQUEST (ADMIN ONLY)
+app.put('/accept-request/:id', isAdmin, async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Approved"
   });
   res.json({ success: true });
 });
 
-// REJECT REQUEST
-app.put('/reject-request/:id', async (req, res) => {
+// REJECT REQUEST (ADMIN ONLY)
+app.put('/reject-request/:id', isAdmin, async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Rejected"
   });
