@@ -1,65 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Request Blood</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <title>Request Blood | Patient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="page-with-bg">
 
 <div class="container d-flex justify-content-center align-items-center" style="height:100vh">
 
-  <div class="glass col-md-5">
+    <div class="table-container col-md-5 bg-white p-4 shadow-lg" style="border-radius: 20px;">
 
-    <h3 class="text-center mb-4">🩸 Request Blood</h3>
-    <div id="successMsg" class="alert alert-success text-center" style="display:none;">
-        ✅ Request submitted successfully!
+        <h3 class="text-center mb-4">🩸 Request Blood</h3>
+
+        <!-- SUCCESS NOTIFICATION -->
+        <div id="successMsg" class="alert alert-success text-center" style="display:none;">
+            ✅ Request submitted successfully!
+        </div>
+
+        <form id="requestForm">
+            <div class="mb-3">
+                <input type="text" name="name" class="form-control" placeholder="Patient Name" required>
+            </div>
+
+            <div class="mb-3">
+                <select name="bloodGroup" class="form-select" required>
+                    <option value="">Select Blood Group</option>
+                    <option>A+</option><option>A-</option>
+                    <option>B+</option><option>B-</option>
+                    <option>O+</option><option>O-</option>
+                    <option>AB+</option><option>AB-</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="city" class="form-control" placeholder="City" required>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">Submit Request</button>
+        </form>
+
     </div>
-    <form id="requestForm">
-
-  <input type="text" name="name" class="form-control mb-3" placeholder="Patient Name" required>
-
-  <select name="bloodGroup" class="form-select mb-3" required>
-    <option value="">Select Blood Group</option>
-    <option>A+</option><option>A-</option>
-    <option>B+</option><option>B-</option>
-    <option>O+</option><option>O-</option>
-    <option>AB+</option><option>AB-</option>
-  </select>
-
-  <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
-
-  <button class="btn btn-danger w-100">Submit Request</button>
-
-</form>
-
-  </div>
 
 </div>
+
 <script>
 const form = document.getElementById("requestForm");
 const successMsg = document.getElementById("successMsg");
 
 form.addEventListener("submit", function(e){
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData(form);
+    // Create a plain JSON object from form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
-  fetch('/add-request', {
-    method: 'POST',
-    body: formData
-  })
-  .then(()=>{
-    successMsg.style.display = "block";
-    form.reset();
+    fetch('/add-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(() => {
+        successMsg.style.display = "block";
+        form.reset();
 
-    setTimeout(()=>{
-      successMsg.style.display = "none";
-    }, 3000);
-  });
+        setTimeout(() => {
+            successMsg.style.display = "none";
+        }, 3000);
+    })
+    .catch(err => {
+        alert("Error submitting request. Please try again.");
+        console.error(err);
+    });
 });
 </script>
 
