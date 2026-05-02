@@ -2,24 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Blood Bank | 3D Experience</title>
+    <title>Blood Bank | Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <!-- 3D Animated Background Layer -->
+<body class="home-body">
     <canvas id="bloodCanvas"></canvas>
 
-    <div class="main-box">
-        <div class="heart-pulse">
-            <i class="fa-solid fa-heart-pulse"></i>
-        </div>
-        <h3>Blood Bank System</h3>
-        <p>Donate Blood ❤️ Save Lives</p>
+    <div class="home-box">
+        <i class="fa-solid fa-heart-pulse" style="color:#ff416c; font-size: 50px; margin-bottom: 15px;"></i>
+        <h3 class="fw-bold">Blood Bank System</h3>
+        <p class="small mb-4">Donate Blood ❤️ Save Lives</p>
 
-        <div class="btn-container">
+        <div class="btn-group-vertical w-100">
             <a href="donors.html" class="btn-premium btn-white">Find Donors</a>
             <a href="donate.html" class="btn-premium btn-outline">Donate Blood</a>
             <a href="request.html" class="btn-premium btn-red">Request Blood</a>
@@ -27,7 +24,6 @@
     </div>
 
     <script>
-        // --- 3D BLOOD CELL ANIMATION SCRIPT ---
         const canvas = document.getElementById('bloodCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -35,51 +31,35 @@
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            for (let i = 0; i < 60; i++) {
-                particles.push(new Particle());
+            particles = [];
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 5 + 2,
+                    dx: (Math.random() - 0.5) * 2,
+                    dy: (Math.random() - 0.5) * 2,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
             }
         }
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 8 + 2;
-                this.speedX = Math.random() * 1.5 - 0.75;
-                this.speedY = Math.random() * 1.5 - 0.75;
-                this.opacity = Math.random() * 0.5 + 0.2;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(220, 53, 69, ${this.opacity})`;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = "red";
-                ctx.fill();
-            }
-        }
-
-        function animate() {
+        function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 65, 108, ${p.alpha})`;
+                ctx.fill();
+                p.x += p.dx; p.y += p.dy;
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            });
+            requestAnimationFrame(draw);
         }
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        init();
-        animate();
+        window.addEventListener('resize', init);
+        init(); draw();
     </script>
 </body>
 </html>
