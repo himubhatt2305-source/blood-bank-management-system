@@ -1,162 +1,97 @@
-/* ---------- GLOBAL ---------- */
+/* ---------- GLOBAL SETTINGS ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center/cover;
-  color: white;
+    font-family: 'Poppins', sans-serif;
+    background: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center/cover fixed;
+    color: white;
+    min-height: 100vh;
 }
 
-/* DARK BG */
 body::before {
-  content: "";
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  z-index: -1;
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8); /* Dark overlay for readability */
+    z-index: -1;
 }
 
-/* ---------- SIDEBAR ---------- */
+/* ---------- SIDEBAR (Glassmorphism) ---------- */
 .sidebar {
-  position: fixed;
-  width: 240px;
-  height: 100%;
-  background: #111;
-  padding-top: 20px;
-  z-index: 1000;
-}
-
-.sidebar h4 {
-  text-align: center;
-  margin-bottom: 20px;
+    position: fixed;
+    width: 240px;
+    height: 100%;
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    z-index: 1000;
 }
 
 .sidebar a {
-  display: block;
-  padding: 14px 20px;
-  color: #ccc;
-  text-decoration: none;
+    display: block;
+    padding: 15px 25px;
+    color: #bbb;
+    text-decoration: none;
 }
 
 .sidebar a:hover {
-  background: #dc3545;
-  color: white;
+    background: rgba(220, 53, 69, 0.2);
+    color: white;
+    border-left: 4px solid #dc3545;
+    padding-left: 35px;
 }
 
-/* ---------- CONTENT ---------- */
+/* ---------- CONTENT & ANIMATIONS ---------- */
 .content {
-  margin-left: 240px;
-  padding: 20px;
+    margin-left: 240px;
+    padding: 40px;
+    animation: fadeInUp 0.8s ease-out;
 }
 
-/* ---------- CARDS ---------- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- MODERN CARDS ---------- */
 .card {
-  border-radius: 15px;
-  padding: 20px;
-  text-align: center;
-  color: white;
-  border: none;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
 }
 
-.card i {
-  font-size: 30px;
-  margin-bottom: 10px;
+/* ---------- TABLE REFINEMENT ---------- */
+.table-responsive {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 20px;
+    animation: fadeIn 1.2s ease-in;
 }
 
-/* ---------- COLORED CARDS ---------- */
-.card-red {
-  background: linear-gradient(135deg, #ff4d4d, #b30000);
-}
-.card-blue {
-  background: linear-gradient(135deg, #4da6ff, #0047b3);
-}
-.card-green {
-  background: linear-gradient(135deg, #28a745, #145c2c);
-}
-.card-yellow {
-  background: linear-gradient(135deg, #ffc107, #b38600);
-}
-
-/* ---------- GLASS ---------- */
-.glass {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 20px;
-}
-
-/* ---------- TABLE ---------- */
 .table {
-  background: white;
-  color: black;
-  border-radius: 10px;
-  overflow: hidden;
+    color: #333;
+    margin-bottom: 0;
 }
 
-/* ---------- OVERLAY ---------- */
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  z-index: 900;
-}
-#overlay.active {
-  display: block;
-}
-
-/* ---------- TOAST ---------- */
-#toastBox .alert {
-  margin-top: 10px;
-}
-
-/* ---------- DARK / LIGHT MODE ---------- */
-body.light {
-  background: #f5f5f5;
-  color: black;
-}
-body.light .card {
-  color: black;
-}
-body.light .sidebar {
-  background: #fff;
-}
-body.light .sidebar a {
-  color: black;
-}
-
-/* ---------- MOBILE ---------- */
-.menu-btn {
-  display: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-@media(max-width:768px){
-  .sidebar {
-    left: -240px;
-  }
-  .sidebar.active {
-    left: 0;
-  }
-  .content {
-    margin-left: 0;
-  }
-  .menu-btn {
-    display: block;
-  }
-}
+/* ---------- THEME TOGGLE ---------- */
+body.light { background: #f8f9fa; color: #333; }
+body.light::before { display: none; }
+body.light .card { background: white; color: #333; border: 1px solid #ddd; }
