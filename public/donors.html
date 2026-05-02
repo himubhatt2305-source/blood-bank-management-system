@@ -2,24 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | Blood Bank</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dashboard-body">
-
     <div class="sidebar">
         <h4 class="text-center py-4">🩸 Blood Bank</h4>
-        <a href="donors.html"><i class="fas fa-columns me-2"></i> Dashboard</a>
-        <a href="requests.html"><i class="fas fa-paper-plane me-2"></i> Requests</a>
-        <a href="/logout" class="text-danger mt-5"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+        <a href="donors.html">Dashboard</a>
+        <a href="requests.html">Requests</a>
+        <a href="/logout" class="text-danger mt-5">Logout</a>
     </div>
 
     <div class="content">
         <h2 class="fw-bold mb-4">Management Dashboard</h2>
-
         <div class="row">
             <div class="col-md-3"><div class="card-stat card-red"><h2 id="totalDonors">0</h2><p>Donors</p></div></div>
             <div class="col-md-3"><div class="card-stat card-blue"><h2 id="totalRequests">0</h2><p>Requests</p></div></div>
@@ -28,7 +25,7 @@
         </div>
 
         <div class="table-container shadow">
-            <input id="liveSearch" class="form-control mb-3" placeholder="🔍 Search donors...">
+            <input id="liveSearch" class="form-control mb-3" placeholder="Search donors...">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
@@ -54,9 +51,9 @@
                 const userData = await userRes.json();
                 isAdmin = (userData.user === "admin");
                 if(isAdmin) document.getElementById('adminHead').style.display = "table-cell";
-            } catch(e) { console.log("User not logged in"); }
+            } catch(e) { console.log("Guest User"); }
 
-            // Load Donors and Stats (Done for everyone)
+            // LOAD LIST IMMEDIATELY FOR EVERYONE
             loadDonors();
             loadStats();
         }
@@ -84,7 +81,6 @@
                 document.getElementById('pendingCount').innerText = data.filter(r => r.status === "Pending").length;
             });
         }
-
         start();
     </script>
 </body>
