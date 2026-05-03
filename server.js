@@ -31,7 +31,10 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: MONGO_URL
-  })
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
 }));
 
 /* ---------------- MODELS ---------------- */
@@ -80,6 +83,13 @@ app.get("/logout", (req, res) => {
   });
 });
 
+// CHECK USER
+app.get('/me', (req, res) => {
+  res.json({
+    user: req.session.user || null
+  });
+});
+
 /* ---------------- PROTECTED PAGES ---------------- */
 
 app.get("/donors.html", isLoggedIn, (req, res) => {
@@ -97,18 +107,18 @@ app.post('/add-donor', isLoggedIn, async (req, res) => {
   try {
     await Donor.create(req.body);
     res.json({ success: true });
-  } catch {
+  } catch (err) {
     res.status(500).json({ success: false });
   }
 });
 
-// GET DONORS
+// GET DONORS (ADMIN ONLY)
 app.get('/donors', isLoggedIn, async (req, res) => {
   const donors = await Donor.find();
   res.json(donors);
 });
 
-// SEARCH DONOR
+// SEARCH (ADMIN SEARCH)
 app.get('/search', isLoggedIn, async (req, res) => {
   const q = req.query.q?.trim();
 
@@ -123,6 +133,36 @@ app.get('/search', isLoggedIn, async (req, res) => {
   });
 
   res.json(donors);
+});
+
+// 🔥 PUBLIC BLOOD SEARCH (IMPORTANT FEATURE)
+app.get('/search-blood', async (req, res) => {
+  try {
+    const blood = req.query.bloodGroup;
+
+    if (!blood) {
+      return res.json({ available: false, count: 0 });
+    }
+
+    const donors = await Donor.find({
+      bloodGroup: blood.toUpperCase()
+    });
+
+    if (donors.length > 0) {
+      res.json({
+        available: true,
+        count: donors.length
+      });
+    } else {
+      res.json({
+        available: false,
+        count: 0
+      });
+    }
+
+  } catch (err) {
+    res.status(500).json({ available: false });
+  }
 });
 
 // UPDATE DONOR (ADMIN ONLY)
@@ -147,7 +187,7 @@ app.delete('/delete-donor/:id', isAdmin, async (req, res) => {
 
 /* ---------------- REQUESTS ---------------- */
 
-// ADD REQUEST
+// ADD REQUEST (PUBLIC)
 app.post('/add-request', async (req, res) => {
   try {
     await Request.create(req.body);
@@ -157,13 +197,13 @@ app.post('/add-request', async (req, res) => {
   }
 });
 
-// GET REQUESTS
+// GET REQUESTS (ADMIN)
 app.get('/requests', isLoggedIn, async (req, res) => {
   const data = await Request.find();
   res.json(data);
 });
 
-// APPROVE REQUEST (ADMIN ONLY)
+// APPROVE REQUEST
 app.put('/accept-request/:id', isAdmin, async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Approved"
@@ -171,7 +211,7 @@ app.put('/accept-request/:id', isAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-// REJECT REQUEST (ADMIN ONLY)
+// REJECT REQUEST
 app.put('/reject-request/:id', isAdmin, async (req, res) => {
   await Request.findByIdAndUpdate(req.params.id, {
     status: "Rejected"
@@ -179,13 +219,8 @@ app.put('/reject-request/:id', isAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/me', (req, res) => {
-  res.json({
-    user: req.session.user || null
-  });
-});
-
 /* ---------------- SERVER ---------------- */
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
