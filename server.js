@@ -15,11 +15,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* ---------------- MONGO ---------------- */
 const MONGO_URL = process.env.MONGO_URI;
 
-if (!MONGO_URL) {
-  console.log("❌ MONGO_URI not found");
-  process.exit(1);
-}
-
 mongoose.connect(MONGO_URL)
   .then(() => console.log("DB Connected ✔"))
   .catch(err => console.log("DB Error:", err));
@@ -31,10 +26,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: MONGO_URL
-  }),
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 // 1 day
-  }
+  })
 }));
 
 /* ---------------- MODELS ---------------- */
@@ -59,12 +51,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-// LOGIN PAGE
+// LOGIN
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public/login.html"));
 });
 
-// LOGIN
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -85,14 +76,12 @@ app.get("/logout", (req, res) => {
 
 // CHECK USER
 app.get('/me', (req, res) => {
-  res.json({
-    user: req.session.user || null
-  });
+  res.json({ user: req.session.user || null });
 });
 
-/* ---------------- PROTECTED PAGES ---------------- */
+/* ---------------- PAGES ---------------- */
 
-app.get("/donors.html", isLoggedIn, (req, res) => {
+app.get("/donors.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public/donors.html"));
 });
 
@@ -102,12 +91,13 @@ app.get("/requests.html", isLoggedIn, (req, res) => {
 
 /* ---------------- DONORS ---------------- */
 
-// ADD DONOR
+// ADD DONOR (ADMIN)
 app.post('/add-donor', isLoggedIn, async (req, res) => {
   try {
+    req.body.bloodGroup = req.body.bloodGroup.trim().toUpperCase();
     await Donor.create(req.body);
     res.json({ success: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false });
   }
 });
@@ -118,83 +108,46 @@ app.get('/donors', isLoggedIn, async (req, res) => {
   res.json(donors);
 });
 
-// SEARCH (ADMIN SEARCH)
-app.get('/search', isLoggedIn, async (req, res) => {
-  const q = req.query.q?.trim();
-
-  if (!q) return res.json([]);
-
-  const donors = await Donor.find({
-    $or: [
-      { name: { $regex: q, $options: "i" } },
-      { city: { $regex: q, $options: "i" } },
-      { bloodGroup: { $regex: q, $options: "i" } }
-    ]
-  });
-
-  res.json(donors);
-});
-
-// 🔥 PUBLIC BLOOD SEARCH (IMPORTANT FEATURE)
+// 🔥 PUBLIC BLOOD SEARCH
 app.get('/search-blood', async (req, res) => {
   try {
-    const blood = req.query.bloodGroup;
+    let blood = req.query.bloodGroup;
 
-    if (!blood) {
-      return res.json({ available: false, count: 0 });
-    }
+    if (!blood) return res.json({ available: false, count: 0 });
+
+    blood = decodeURIComponent(blood).trim().toUpperCase();
 
     const donors = await Donor.find({
-      bloodGroup: blood.toUpperCase()
+      $expr: {
+        $eq: [
+          { $toUpper: "$bloodGroup" },
+          blood
+        ]
+      }
     });
 
-    if (donors.length > 0) {
-      res.json({
-        available: true,
-        count: donors.length
-      });
-    } else {
-      res.json({
-        available: false,
-        count: 0
-      });
-    }
+    res.json({
+      available: donors.length > 0,
+      count: donors.length
+    });
 
-  } catch (err) {
+  } catch {
     res.status(500).json({ available: false });
   }
 });
 
-// UPDATE DONOR (ADMIN ONLY)
-app.put('/update-donor/:id', isAdmin, async (req, res) => {
-  try {
-    await Donor.findByIdAndUpdate(req.params.id, req.body);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
-});
-
-// DELETE DONOR (ADMIN ONLY)
+// DELETE (ADMIN)
 app.delete('/delete-donor/:id', isAdmin, async (req, res) => {
-  try {
-    await Donor.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
+  await Donor.findByIdAndDelete(req.params.id);
+  res.json({ success: true });
 });
 
 /* ---------------- REQUESTS ---------------- */
 
 // ADD REQUEST (PUBLIC)
 app.post('/add-request', async (req, res) => {
-  try {
-    await Request.create(req.body);
-    res.json({ success: true });
-  } catch {
-    res.status(500).json({ success: false });
-  }
+  await Request.create(req.body);
+  res.json({ success: true });
 });
 
 // GET REQUESTS (ADMIN)
@@ -203,19 +156,15 @@ app.get('/requests', isLoggedIn, async (req, res) => {
   res.json(data);
 });
 
-// APPROVE REQUEST
+// APPROVE
 app.put('/accept-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, {
-    status: "Approved"
-  });
+  await Request.findByIdAndUpdate(req.params.id, { status: "Approved" });
   res.json({ success: true });
 });
 
-// REJECT REQUEST
+// REJECT
 app.put('/reject-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, {
-    status: "Rejected"
-  });
+  await Request.findByIdAndUpdate(req.params.id, { status: "Rejected" });
   res.json({ success: true });
 });
 
