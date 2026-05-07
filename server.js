@@ -8,7 +8,7 @@ const MongoStore = require("connect-mongo").default;
 const bcrypt = require("bcryptjs");
 
 const User = require("./models/User");
-const Donor = require("./models/Donor");
+const Donor = require("./models/donors");
 const Request = require("./models/Request");
 
 const app = express();
