@@ -40,27 +40,21 @@
 </div>
 
 <script>
-    function loadRequests() {
-        fetch('/requests-data').then(res => res.json()).then(data => {
-            document.getElementById("requestTable").innerHTML = data.map(r => `
-                <tr>
-                    <td><b>${r.name}</b></td>
-                    <td><span class="badge bg-danger">${r.bloodGroup}</span></td>
-                    <td>${r.city}</td>
-                    <td><span class="badge ${r.status === 'Approved' ? 'bg-success' : 'bg-warning text-dark'}">${r.status || "Pending"}</span></td>
-                    <td>
-                        <button onclick="update('${r._id}', 'accept')" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>
-                        <button onclick="update('${r._id}', 'reject')" class="btn btn-outline-danger btn-sm"><i class="fas fa-times"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        });
-    }
-
-    function update(id, type) {
-        fetch(`/${type}-request/${id}`, { method: 'PUT' }).then(() => loadRequests());
-    }
-    loadRequests();
+function loadRequests() {
+    fetch('/requests-data')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('requestTable').innerHTML = data.map(r => `
+            <tr>
+                <td>${r.name}</td>
+                <td>${r.bloodGroup}</td>
+                <td>${r.city}</td>
+                <td><span class="badge bg-warning">${r.status}</span></td>
+            </tr>
+        `).join('');
+    });
+}
+loadRequests();
 </script>
 </body>
 </html>

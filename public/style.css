@@ -1,275 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
-/* --- 1. GLOBAL & RESET --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; background: #0f172a; color: white; overflow-x: hidden; }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    overflow-x: hidden;
-    background: #0f172a;
-    color: white;
-    line-height: 1.6;
-}
+/* NAVBAR TAGS */
+.navbar-custom { background: #0f172a; border-bottom: 1px solid #334155; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 3000; }
+.nav-links a { color: #cbd5e1; text-decoration: none; margin-left: 20px; font-size: 14px; }
 
-/* --- 2. NAVIGATION BAR (FIXED TOP) --- */
-.navbar-custom {
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px 5%;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 4000;
-    /* Stays above everything */
-}
+/* HERO */
+.hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 8% 60px 8%; position: relative; }
+.hero h1 { font-size: 60px; font-weight: 700; }
+.hero span { color: #ff4d6d; }
+#bloodCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-.nav-links a {
-    color: #cbd5e1;
-    text-decoration: none;
-    margin-left: 25px;
-    font-size: 14px;
-    font-weight: 500;
-}
+/* CARDS */
+.card-box { background: rgba(255,255,255,0.08); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }
+.stock-card { padding: 25px; border-radius: 15px; text-align: center; color: white; margin-bottom: 10px; }
+.a-plus { background: #ef4444; } .b-plus { background: #3b82f6; }
 
-.nav-links a:hover {
-    color: #ff4d6d;
-}
+/* DASHBOARD */
+.sidebar { position: fixed; width: 260px; height: 100%; background: #0a0a0a; padding-top: 100px; z-index: 2000; transition: 0.3s; }
+.content { margin-left: 260px; padding: 120px 40px; }
+.table-container { background: white; border-radius: 15px; padding: 15px; color: black; }
 
-.admin-tag {
-    border: 1px solid #ff4d6d;
-    padding: 6px 18px !important;
-    border-radius: 25px;
-    color: #ff4d6d !important;
-}
-
-.admin-tag:hover {
-    background: #ff4d6d;
-    color: white !important;
-}
-
-/* --- 3. HERO & HOME PAGE --- */
-.hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 120px 8% 60px 8%;
-    position: relative;
-}
-
-#bloodCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
-}
-
-.hero h1 {
-    font-size: clamp(32px, 5vw, 60px);
-    font-weight: 700;
-    margin-bottom: 20px;
-}
-
-.hero span {
-    color: #ff4d6d;
-}
-
-.card-box {
-    background: rgba(255, 255, 255, 0.08);
-    padding: 30px;
-    border-radius: 25px;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* --- 4. BUTTONS --- */
-.btn-red {
-    background: #ff1744;
-    color: white;
-    padding: 12px 28px;
-    border-radius: 12px;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: 600;
-    border: none;
-}
-
-.btn-outline-light {
-    border: 2px solid white;
-    padding: 10px 28px;
-    border-radius: 12px;
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.btn-red:hover,
-.btn-outline-light:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(255, 23, 68, 0.4);
-}
-
-/* --- 5. DASHBOARD & SIDEBAR --- */
-.dashboard-body,
-.page-with-bg {
-    background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)),
-        url('https://images.unsplash.com/photo-1615461066159-fea0960485d5') no-repeat center/cover fixed;
-}
-
-.sidebar {
-    position: fixed;
-    width: 260px;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background: rgba(10, 10, 10, 0.98);
-    backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 100px;
-    z-index: 2000;
-    transition: transform 0.4s ease;
-}
-
-.sidebar a {
-    display: block;
-    padding: 15px 25px;
-    color: #bbb;
-    text-decoration: none;
-    font-size: 15px;
-}
-
-.sidebar a:hover {
-    color: white;
-    background: rgba(255, 77, 109, 0.15);
-    border-left: 4px solid #ff4d6d;
-}
-
-.content {
-    margin-left: 260px;
-    padding: 120px 40px 40px 40px;
-}
-
-/* --- 6. STATS CARDS --- */
-.card-stat {
-    border-radius: 20px;
-    padding: 25px;
-    text-align: center;
-    color: white;
-    margin-bottom: 25px;
-    border: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card-red {
-    background: linear-gradient(45deg, #ff1744, #ff4d6d);
-}
-
-.card-blue {
-    background: linear-gradient(45deg, #3b82f6, #2563eb);
-}
-
-.card-green {
-    background: linear-gradient(45deg, #10b981, #059669);
-}
-
-.card-yellow {
-    background: linear-gradient(45deg, #f59e0b, #d97706);
-}
-
-/* --- 7. TABLES --- */
-.table-container {
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 20px;
-    color: #1e293b;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.table thead {
-    background: #0f172a;
-    color: white;
-}
-
-.table-responsive {
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-/* --- 8. MOBILE RESPONSIVE FIXES --- */
+/* MOBILE FIX */
 @media (max-width: 991px) {
-
-    /* Hide desktop nav links */
-    .nav-links {
-        display: none;
-    }
-
-    /* Fix Content spacing */
-    .content {
-        margin-left: 0;
-        padding: 100px 15px 30px 15px;
-    }
-
-    /* Sidebar off-screen */
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
-    /* Fix Hero spacing to prevent overlapping */
-    .hero {
-        padding-top: 100px;
-        text-align: center;
-        flex-direction: column;
-    }
-
-    .hero h1 {
-        font-size: 38px;
-    }
-
-    .card-box {
-        margin-top: 30px;
-        width: 100%;
-    }
-
-    /* Fix Stat Cards on small screens */
-    .col-6 {
-        width: 50%;
-    }
-}
-
-.stock-card {
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    color: white;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.a-plus {
-    background: #ef4444;
-}
-.b-plus {
-    background: #3b82f6;
-}
-
-.o-plus {
-    background: #22c55e;
-}
-
-.ab-plus {
-    background: #a855f7;
+    .hero { padding-top: 100px; flex-direction: column; text-align: center; }
+    .hero h1 { font-size: 35px; }
+    .nav-links { display: none; }
+    .sidebar { transform: translateX(-100%); }
+    .content { margin-left: 0; padding: 100px 15px; }
 }

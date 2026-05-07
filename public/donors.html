@@ -51,56 +51,23 @@
 </div>
 
 <script>
-    let isAdmin = false;
-    let allDonors = [];
-
-    async function start() {
-        const res = await fetch('/me');
-        const user = await res.json();
-        isAdmin = (user.role === "admin");
-        if(isAdmin) document.getElementById('adminHead').style.display = "table-cell";
-        loadDonors();
-        loadStats();
-    }
-
-    function loadDonors() {
-        fetch('/donors-list').then(res=>res.json()).then(data=>{
-            allDonors = data;
-            renderTable(data);
-            document.getElementById('totalDonors').innerText = data.length;
-        });
-    }
-
-    function renderTable(data) {
-        document.getElementById('donorTable').innerHTML = data.map(d=>`
+function loadDonors() {
+    fetch('/donors-list')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('donorTable').innerHTML = data.map(d => `
             <tr>
                 <td><b>${d.name}</b></td>
                 <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
                 <td>${d.phone}</td>
                 <td>${d.city}</td>
-                ${isAdmin ? `<td><button class="btn btn-sm btn-danger" onclick="deleteItem('${d._id}')">Delete</button></td>` : ""}
+                <td><button class="btn btn-sm btn-danger" onclick="deleteDonor('${d._id}')">Delete</button></td>
             </tr>
         `).join('');
-    }
-
-    function loadStats() {
-        fetch('/requests-data').then(res=>res.json()).then(data=>{
-            document.getElementById('totalRequests').innerText = data.length;
-            document.getElementById('approvedCount').innerText = data.filter(r=>r.status==="Approved").length;
-            document.getElementById('pendingCount').innerText = data.filter(r=>r.status==="Pending").length;
-        });
-    }
-
-    document.getElementById("bloodSearch").addEventListener("input", function() {
-        const val = this.value.trim().toUpperCase();
-        const filtered = allDonors.filter(d => d.bloodGroup.includes(val));
-        renderTable(filtered);
     });
-
-    function deleteItem(id) {
-        fetch('/delete-donor/'+id,{method:"DELETE"}).then(()=>loadDonors());
-    }
-    start();
+}
+function deleteDonor(id) { fetch('/delete-donor/'+id, {method:'DELETE'}).then(()=>loadDonors()); }
+loadDonors();
 </script>
 </body>
 </html>
