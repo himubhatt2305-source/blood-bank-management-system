@@ -7,265 +7,190 @@
 <title>Blood Bank Management</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
 
 body{
 background:#0f172a;
-overflow-x:hidden;
 color:white;
+font-family:Poppins;
 }
 
-/* NAVBAR */
-.navbar{
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
-padding:15px 30px;
-position:fixed;
-width:100%;
-top:0;
-z-index:1000;
-}
-
-.navbar-brand{
-font-size:28px;
-font-weight:700;
-color:white !important;
-}
-
-.nav-link{
-color:white !important;
-margin-left:20px;
-}
-
-/* HERO */
+/* HERO STYLE RESTORED */
 .hero{
-min-height:100vh;
+padding:120px 8%;
 display:flex;
 align-items:center;
-padding:120px 8%;
+min-height:100vh;
 }
 
-.hero-left h1{
+.hero h1{
 font-size:60px;
 font-weight:700;
 }
 
-.hero-left span{
+.hero span{
 color:#ff4d6d;
 }
 
 .hero-card{
 background:rgba(255,255,255,0.08);
-padding:35px;
-border-radius:25px;
+padding:30px;
+border-radius:20px;
 }
 
-/* STOCK */
-.stock-section{
-padding:80px 8%;
+.btn-red{
+background:#ff1744;
+color:white;
+border:none;
+}
+
+.btn-red:hover{
+background:#ff4d6d;
 }
 
 .stock-card{
 background:rgba(255,255,255,0.06);
-padding:30px;
-border-radius:25px;
+padding:25px;
+border-radius:15px;
 text-align:center;
 }
 
-/* STATS */
-.stats{
-padding:80px 8%;
-}
-
-.stat-card{
+.stat{
 background:rgba(255,255,255,0.06);
-padding:40px;
-border-radius:25px;
+padding:25px;
+border-radius:15px;
 text-align:center;
 }
 
-.footer{
-padding:30px;
-text-align:center;
-background:#020617;
-}
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-<div class="container-fluid">
-
-<a class="navbar-brand">🩸 Blood Bank</a>
-
-<div class="collapse navbar-collapse">
-<ul class="navbar-nav ms-auto">
-<li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-<li class="nav-item"><a class="nav-link" href="donate.html">Donate</a></li>
-<li class="nav-item"><a class="nav-link" href="request.html">Request</a></li>
-<li class="nav-item"><a class="nav-link" href="login.html">Admin</a></li>
-</ul>
-</div>
-
-</div>
-</nav>
-
 <!-- HERO -->
 <section class="hero">
-<div class="container">
-<div class="row align-items-center">
 
-<div class="col-lg-6 hero-left">
+<div class="container">
+
+<div class="row">
+
+<div class="col-md-6">
+
 <h1>Donate Blood <br><span>Save Lives ❤️</span></h1>
+
 <p>One donation can save multiple lives.</p>
+
+<a href="donate.html" class="btn btn-red">Become Donor</a>
+<a href="request.html" class="btn btn-outline-light ms-2">Request Blood</a>
+
 </div>
 
-<div class="col-lg-6">
+<div class="col-md-6">
+
 <div class="hero-card">
 
-<h3 class="text-center">🔍 Search Blood</h3>
+<h3>Check Blood Availability</h3>
 
-<input type="text" id="bloodInput" class="form-control mt-3" placeholder="Enter Blood Group">
+<input id="bloodInput" class="form-control mt-3" placeholder="Enter Blood Group">
 
-<button onclick="checkBlood()" class="btn btn-danger w-100 mt-3">
-Check Availability
-</button>
+<button onclick="checkBlood()" class="btn btn-red w-100 mt-3">Check</button>
 
-<div id="result" class="mt-3 text-center"></div>
+<div id="result" class="mt-3"></div>
 
-</div>
 </div>
 
 </div>
+
 </div>
+
+</div>
+
 </section>
 
-<!-- BLOOD STOCK -->
-<section class="stock-section">
-<h1 class="text-center mb-5">🩸 Blood Availability</h1>
+<!-- STOCK -->
+<section class="container mt-5">
 
-<div class="container">
-<div class="row g-4">
+<div class="row g-3 text-center">
 
-<div class="col-6 col-md-3">
-<div class="stock-card">
-<h2>A+</h2>
-<p id="Apos">0 Units</p>
-</div>
+<div class="col-md-3 stock-card">
+<h3>A+</h3>
+<p id="Apos">0</p>
 </div>
 
-<div class="col-6 col-md-3">
-<div class="stock-card">
-<h2>B+</h2>
-<p id="Bpos">0 Units</p>
-</div>
+<div class="col-md-3 stock-card">
+<h3>B+</h3>
+<p id="Bpos">0</p>
 </div>
 
-<div class="col-6 col-md-3">
-<div class="stock-card">
-<h2>O+</h2>
-<p id="Opos">0 Units</p>
-</div>
+<div class="col-md-3 stock-card">
+<h3>O+</h3>
+<p id="Opos">0</p>
 </div>
 
-<div class="col-6 col-md-3">
-<div class="stock-card">
-<h2>AB+</h2>
-<p id="ABpos">0 Units</p>
-</div>
+<div class="col-md-3 stock-card">
+<h3>AB+</h3>
+<p id="ABpos">0</p>
 </div>
 
 </div>
-</div>
+
 </section>
 
 <!-- STATS -->
-<section class="stats">
+<section class="container mt-5 text-center">
 
-<div class="container">
-<div class="row g-4">
+<div class="row g-3">
 
-<div class="col-md-4">
-<div class="stat-card">
+<div class="col-md-6 stat">
 <h2 id="donorCount">0</h2>
 <p>Total Donors</p>
 </div>
-</div>
 
-<div class="col-md-4">
-<div class="stat-card">
+<div class="col-md-6 stat">
 <h2 id="requestCount">0</h2>
 <p>Total Requests</p>
 </div>
-</div>
 
-<div class="col-md-4">
-<div class="stat-card">
-<h2>24/7</h2>
-<p>Emergency</p>
-</div>
-</div>
-
-</div>
 </div>
 
 </section>
 
-<!-- FOOTER -->
-<div class="footer">
-© 2026 Blood Bank System
-</div>
-
-<!-- SCRIPT -->
 <script>
 
-/* LOAD DONOR SUMMARY */
-fetch('/donors')
-.then(res => res.json())
-.then(data => {
-
-document.getElementById("donorCount").innerText = data.total;
-
-document.getElementById("Apos").innerText = data.Apos + " Units";
-document.getElementById("Bpos").innerText = data.Bpos + " Units";
-document.getElementById("Opos").innerText = data.Opos + " Units";
-document.getElementById("ABpos").innerText = data.ABpos + " Units";
-
+/* LOAD DONORS */
+fetch("/donors")
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("donorCount").innerText=d.total;
+document.getElementById("Apos").innerText=d.Apos;
+document.getElementById("Bpos").innerText=d.Bpos;
+document.getElementById("Opos").innerText=d.Opos;
+document.getElementById("ABpos").innerText=d.ABpos;
 });
 
-/* REQUEST COUNT */
-fetch('/requests')
-.then(res => res.json())
-.then(data => {
-document.getElementById("requestCount").innerText = data.count;
+/* REQUEST */
+fetch("/requests")
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("requestCount").innerText=d.count;
 });
 
-/* BLOOD SEARCH */
+/* SEARCH */
 function checkBlood(){
 
-const result = document.getElementById("result");
+const bg=document.getElementById("bloodInput").value.toUpperCase();
 
-const bg = document.getElementById("bloodInput").value.trim().toUpperCase();
-
-fetch(`/search-blood?bloodGroup=${bg}`)
-.then(res => res.json())
-.then(data => {
+fetch("/search-blood?bloodGroup="+bg)
+.then(r=>r.json())
+.then(data=>{
 
 if(data.available){
-result.innerHTML = `<div class="alert alert-success">✅ Available (${data.count})</div>`;
+document.getElementById("result").innerHTML="✅ Available";
 }else{
-result.innerHTML = `<div class="alert alert-danger">❌ Not Available</div>`;
+document.getElementById("result").innerHTML="❌ Not Available";
 }
 
 });
@@ -273,8 +198,6 @@ result.innerHTML = `<div class="alert alert-danger">❌ Not Available</div>`;
 }
 
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

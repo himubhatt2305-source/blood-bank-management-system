@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Login</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+
 body{
 background:#0f172a;
 height:100vh;
@@ -16,19 +18,33 @@ justify-content:center;
 align-items:center;
 font-family:Poppins;
 }
+
 .card-box{
 background:white;
 padding:40px;
 border-radius:20px;
 width:100%;
 max-width:420px;
+box-shadow:0 0 30px rgba(0,0,0,0.3);
 }
+
+.btn-red{
+background:#ff1744;
+color:white;
+border:none;
+}
+
+.btn-red:hover{
+background:#ff4d6d;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="card-box">
+
 <h2 class="text-center mb-4">Login</h2>
 
 <form id="loginForm">
@@ -37,27 +53,32 @@ max-width:420px;
 
 <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
 
-<button class="btn btn-danger w-100">Login</button>
+<button class="btn btn-red w-100">Login</button>
 
 </form>
+
+<p class="text-center mt-3">
+No account? <a href="signup.html">Signup</a>
+</p>
+
 </div>
 
 <script>
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+document.getElementById("loginForm").addEventListener("submit", async (e)=>{
 e.preventDefault();
 
 const data = Object.fromEntries(new FormData(e.target));
 
-const res = await fetch('/login', {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(data)
+const res = await fetch("/login",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(data)
 });
 
 const result = await res.json();
 
 if(result.success){
-window.location.href = "/";
+window.location.href="/index.html";
 }else{
 alert(result.message);
 }
