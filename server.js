@@ -8,8 +8,8 @@ const MongoStore = require("connect-mongo").default;
 const bcrypt = require("bcryptjs");
 
 const User = require("./models/User");
-const Donor = require('./models/donors');
-const Request = require('./models/request');
+const Donor = require("./models/donors");
+const Request = require("./models/request");
 
 const app = express();
 
@@ -33,8 +33,18 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: MONGO_URL })
 }));
 
-/* ---------------- ROUTES ---------------- */
+/* ---------------- AUTH ---------------- */
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next();
+  res.redirect("/login.html");
+}
 
+function isAdmin(req, res, next) {
+  if (req.session.role === "admin") return next();
+  res.status(403).send("Access Denied");
+}
+
+/* ---------------- PAGES ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
@@ -69,7 +79,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-/* ---------------- LOGIN (ADMIN FIXED) ---------------- */
+/* ---------------- LOGIN ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,23 +99,21 @@ app.post("/login", async (req, res) => {
     req.session.user = user.email;
     req.session.role = user.role;
 
-    res.json({
-      success: true,
-      role: user.role
-    });
+    res.json({ success: true });
 
   } catch (err) {
     res.json({ success: false });
   }
 });
 
-/* ---------------- ADMIN CHECK ---------------- */
-function isAdmin(req, res, next) {
-  if (req.session.role === "admin") return next();
-  res.status(403).send("Access Denied");
-}
+/* ---------------- LOGOUT ---------------- */
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login.html");
+  });
+});
 
-/* ---------------- SUMMARY ONLY (NO LIST) ---------------- */
+/* ---------------- DONORS SUMMARY ONLY ---------------- */
 app.get('/donors', async (req, res) => {
   const donors = await Donor.find();
 
@@ -118,12 +126,9 @@ app.get('/donors', async (req, res) => {
   });
 });
 
-/* ---------------- SEARCH ---------------- */
+/* ---------------- BLOOD SEARCH ---------------- */
 app.get('/search-blood', async (req, res) => {
-  let blood = req.query.bloodGroup;
-  if (!blood) return res.json({ available: false });
-
-  blood = blood.trim().toUpperCase();
+  const blood = (req.query.bloodGroup || "").trim().toUpperCase();
 
   const count = await Donor.countDocuments({ bloodGroup: blood });
 
@@ -133,7 +138,7 @@ app.get('/search-blood', async (req, res) => {
   });
 });
 
-/* ---------------- REQUEST COUNT ---------------- */
+/* ---------------- REQUEST COUNT ONLY ---------------- */
 app.get('/requests', async (req, res) => {
   const count = await Request.countDocuments();
   res.json({ count });
