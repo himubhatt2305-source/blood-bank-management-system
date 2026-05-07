@@ -16,14 +16,16 @@ body{
 background:#0f172a;
 color:white;
 font-family:Poppins;
+overflow-x:hidden;
 }
 
-/* HERO STYLE RESTORED */
+/* HERO */
 .hero{
-padding:120px 8%;
+min-height:100vh;
 display:flex;
 align-items:center;
-min-height:100vh;
+padding:120px 8%;
+position:relative;
 }
 
 .hero h1{
@@ -35,34 +37,76 @@ font-weight:700;
 color:#ff4d6d;
 }
 
-.hero-card{
-background:rgba(255,255,255,0.08);
-padding:30px;
-border-radius:20px;
+.hero p{
+color:#cbd5e1;
+margin-top:15px;
 }
 
+/* BUTTONS */
 .btn-red{
 background:#ff1744;
 color:white;
+padding:12px 25px;
+border-radius:10px;
 border:none;
+transition:0.3s;
+text-decoration:none;
+display:inline-block;
 }
 
 .btn-red:hover{
 background:#ff4d6d;
+transform:translateY(-2px);
 }
 
+.btn-outline-light{
+border:2px solid #fff;
+padding:12px 25px;
+border-radius:10px;
+color:white;
+}
+
+/* HERO CARD */
+.card-box{
+background:rgba(255,255,255,0.08);
+padding:30px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+}
+
+/* STOCK CARDS */
 .stock-card{
-background:rgba(255,255,255,0.06);
 padding:25px;
 border-radius:15px;
 text-align:center;
+font-weight:600;
+transition:0.3s;
 }
 
-.stat{
-background:rgba(255,255,255,0.06);
-padding:25px;
-border-radius:15px;
+.stock-card:hover{
+transform:scale(1.05);
+}
+
+/* COLORS FOR BLOOD GROUPS */
+.a-plus{background:#ef4444;}
+.b-plus{background:#3b82f6;}
+.o-plus{background:#22c55e;}
+.ab-plus{background:#a855f7;}
+
+/* EMERGENCY */
+.emergency{
+margin-top:80px;
+padding:50px;
+background:linear-gradient(135deg,#ff1744,#ff4d6d);
+border-radius:25px;
 text-align:center;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.02);}
+100%{transform:scale(1);}
 }
 
 </style>
@@ -71,36 +115,36 @@ text-align:center;
 <body>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero container">
 
-<div class="container">
-
-<div class="row">
+<div class="row align-items-center">
 
 <div class="col-md-6">
 
 <h1>Donate Blood <br><span>Save Lives ❤️</span></h1>
 
-<p>One donation can save multiple lives.</p>
+<p>
+Your one donation can save multiple lives.
+Join our blood donation system.
+</p>
 
-<a href="donate.html" class="btn btn-red">Become Donor</a>
-<a href="request.html" class="btn btn-outline-light ms-2">Request Blood</a>
+<!-- RESTORED BUTTONS -->
+<a href="donate.html" class="btn-red me-2">Donate Blood</a>
+<a href="request.html" class="btn-outline-light">Request Blood</a>
 
 </div>
 
 <div class="col-md-6">
 
-<div class="hero-card">
+<div class="card-box">
 
-<h3>Check Blood Availability</h3>
+<h4>🔍 Check Blood Availability</h4>
 
 <input id="bloodInput" class="form-control mt-3" placeholder="Enter Blood Group">
 
-<button onclick="checkBlood()" class="btn btn-red w-100 mt-3">Check</button>
+<button onclick="checkBlood()" class="btn btn-danger w-100 mt-3">Check</button>
 
-<div id="result" class="mt-3"></div>
-
-</div>
+<div id="result" class="mt-3 text-center"></div>
 
 </div>
 
@@ -113,27 +157,55 @@ text-align:center;
 <!-- STOCK -->
 <section class="container mt-5">
 
+<h2 class="text-center mb-4">🩸 Blood Availability</h2>
+
 <div class="row g-3 text-center">
 
-<div class="col-md-3 stock-card">
-<h3>A+</h3>
-<p id="Apos">0</p>
+<div class="col-6 col-md-3">
+<div class="stock-card a-plus">
+<h4>A+</h4>
+<p id="Apos">0 Units</p>
+</div>
 </div>
 
-<div class="col-md-3 stock-card">
-<h3>B+</h3>
-<p id="Bpos">0</p>
+<div class="col-6 col-md-3">
+<div class="stock-card b-plus">
+<h4>B+</h4>
+<p id="Bpos">0 Units</p>
+</div>
 </div>
 
-<div class="col-md-3 stock-card">
-<h3>O+</h3>
-<p id="Opos">0</p>
+<div class="col-6 col-md-3">
+<div class="stock-card o-plus">
+<h4>O+</h4>
+<p id="Opos">0 Units</p>
+</div>
 </div>
 
-<div class="col-md-3 stock-card">
-<h3>AB+</h3>
-<p id="ABpos">0</p>
+<div class="col-6 col-md-3">
+<div class="stock-card ab-plus">
+<h4>AB+</h4>
+<p id="ABpos">0 Units</p>
 </div>
+</div>
+
+</div>
+
+</section>
+
+<!-- EMERGENCY RESTORED -->
+<section class="container">
+
+<div class="emergency mt-5">
+
+<h1>🚨 Emergency Blood Required</h1>
+
+<p>
+Urgent requirement for O- blood group.
+Please donate immediately and save lives.
+</p>
+
+<a href="request.html" class="btn btn-light mt-3">Request Now</a>
 
 </div>
 
@@ -142,36 +214,26 @@ text-align:center;
 <!-- STATS -->
 <section class="container mt-5 text-center">
 
-<div class="row g-3">
-
-<div class="col-md-6 stat">
-<h2 id="donorCount">0</h2>
-<p>Total Donors</p>
-</div>
-
-<div class="col-md-6 stat">
-<h2 id="requestCount">0</h2>
-<p>Total Requests</p>
-</div>
-
-</div>
+<h3>Total Donors: <span id="donorCount">0</span></h3>
+<h3>Total Requests: <span id="requestCount">0</span></h3>
 
 </section>
 
 <script>
 
-/* LOAD DONORS */
+/* DONORS */
 fetch("/donors")
 .then(r=>r.json())
 .then(d=>{
 document.getElementById("donorCount").innerText=d.total;
-document.getElementById("Apos").innerText=d.Apos;
-document.getElementById("Bpos").innerText=d.Bpos;
-document.getElementById("Opos").innerText=d.Opos;
-document.getElementById("ABpos").innerText=d.ABpos;
+
+document.getElementById("Apos").innerText=d.Apos+" Units";
+document.getElementById("Bpos").innerText=d.Bpos+" Units";
+document.getElementById("Opos").innerText=d.Opos+" Units";
+document.getElementById("ABpos").innerText=d.ABpos+" Units";
 });
 
-/* REQUEST */
+/* REQUESTS */
 fetch("/requests")
 .then(r=>r.json())
 .then(d=>{
@@ -180,21 +242,14 @@ document.getElementById("requestCount").innerText=d.count;
 
 /* SEARCH */
 function checkBlood(){
-
 const bg=document.getElementById("bloodInput").value.toUpperCase();
 
 fetch("/search-blood?bloodGroup="+bg)
 .then(r=>r.json())
 .then(data=>{
-
-if(data.available){
-document.getElementById("result").innerHTML="✅ Available";
-}else{
-document.getElementById("result").innerHTML="❌ Not Available";
-}
-
+document.getElementById("result").innerHTML =
+data.available ? "✅ Blood Available" : "❌ Not Available";
 });
-
 }
 
 </script>
