@@ -25,4 +25,8 @@ const userSchema = new mongoose.Schema({
 
 });
 
+<<<<<<< HEAD
 module.exports = mongoose.model("User", userSchema);
+=======
+module.exports = mongoose.model("User", userSchema);
+>>>>>>> cc11cc3 (Added gitignore)

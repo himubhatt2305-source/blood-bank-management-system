@@ -55,9 +55,13 @@ form.addEventListener("submit", function(e){
     .then(() => {
         successMsg.style.display = "block";
         form.reset();
-        setTimeout(() => { successMsg.style.display = "none"; }, 3000);
+        setTimeout(() => {
+            successMsg.style.display = "none";
+        }, 3000);
     })
-    .catch(() => { alert("Error adding donor"); });
+    .catch(() => {
+        alert("Error adding donor");
+    });
 });
 </script>
 </body>
