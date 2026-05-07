@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -145,4 +144,3 @@ vite.config.ts.timestamp-*
 =======
 node_modules
 .env
->>>>>>> cc11cc3 (Added gitignore)
