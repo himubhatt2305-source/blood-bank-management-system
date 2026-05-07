@@ -33,19 +33,17 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: MONGO_URL })
 }));
 
-/* ---------------- AUTH ---------------- */
-function isLoggedIn(req, res, next) {
-  if (req.session.user) return next();
-  res.redirect("/login");
-}
-
 /* ---------------- ROUTES ---------------- */
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- AUTH ---------------- */
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/login.html"));
+});
+
+/* ---------------- SIGNUP ---------------- */
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -66,72 +64,76 @@ app.post("/signup", async (req, res) => {
 
     res.json({ success: true });
 
-  } catch {
+  } catch (err) {
     res.json({ success: false });
   }
 });
 
+/* ---------------- LOGIN (ADMIN FIXED) ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
 
     const match = await bcrypt.compare(password, user.password);
 
-    if (!match) return res.json({ success: false, message: "Wrong password" });
+    if (!match) {
+      return res.json({ success: false, message: "Wrong password" });
+    }
 
     req.session.user = user.email;
     req.session.role = user.role;
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      role: user.role
+    });
 
-  } catch {
+  } catch (err) {
     res.json({ success: false });
   }
 });
 
-/* ---------------- SUMMARY ONLY (IMPORTANT FIX) ---------------- */
+/* ---------------- ADMIN CHECK ---------------- */
+function isAdmin(req, res, next) {
+  if (req.session.role === "admin") return next();
+  res.status(403).send("Access Denied");
+}
 
-// ❌ NO FULL LIST
+/* ---------------- SUMMARY ONLY (NO LIST) ---------------- */
 app.get('/donors', async (req, res) => {
   const donors = await Donor.find();
 
-  const summary = {
+  res.json({
     total: donors.length,
     Apos: donors.filter(d => d.bloodGroup === "A+").length,
     Bpos: donors.filter(d => d.bloodGroup === "B+").length,
     Opos: donors.filter(d => d.bloodGroup === "O+").length,
     ABpos: donors.filter(d => d.bloodGroup === "AB+").length,
-  };
-
-  res.json(summary);
+  });
 });
 
-/* ---------------- BLOOD SEARCH ---------------- */
+/* ---------------- SEARCH ---------------- */
 app.get('/search-blood', async (req, res) => {
-  try {
-    let blood = req.query.bloodGroup;
+  let blood = req.query.bloodGroup;
+  if (!blood) return res.json({ available: false });
 
-    if (!blood) return res.json({ available: false, count: 0 });
+  blood = blood.trim().toUpperCase();
 
-    blood = blood.trim().toUpperCase();
+  const count = await Donor.countDocuments({ bloodGroup: blood });
 
-    const count = await Donor.countDocuments({ bloodGroup: blood });
-
-    res.json({
-      available: count > 0,
-      count
-    });
-
-  } catch {
-    res.status(500).json({ available: false });
-  }
+  res.json({
+    available: count > 0,
+    count
+  });
 });
 
-/* ---------------- REQUEST COUNT ONLY ---------------- */
+/* ---------------- REQUEST COUNT ---------------- */
 app.get('/requests', async (req, res) => {
   const count = await Request.countDocuments();
   res.json({ count });
