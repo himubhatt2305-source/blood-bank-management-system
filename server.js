@@ -25,16 +25,19 @@ mongoose.connect(process.env.MONGO_URI)
   process.exit(1);
 });
 
-/* ---------------- SESSION (FIXED) ---------------- */
+/* ---------------- SESSION (FINAL FIX) ---------------- */
 app.set("trust proxy", 1);
 
 app.use(session({
-  secret: "bloodbank_secret",
+  secret: "bloodbank_secret_key",
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
+
+  // 🔥 UNIVERSAL FIX (no create(), no error)
+  store: new MongoStore({
     mongoUrl: process.env.MONGO_URI
   }),
+
   cookie: {
     secure: false,
     maxAge: 1000 * 60 * 60 * 24
@@ -46,7 +49,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- SIGNUP (NO HASH) ---------------- */
+/* ---------------- SIGNUP (PLAIN PASSWORD) ---------------- */
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -66,11 +69,12 @@ app.post("/signup", async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    res.json({ success: false, message: "Signup error" });
+    console.log(err);
+    res.json({ success: false });
   }
 });
 
-/* ---------------- LOGIN (NO HASH) ---------------- */
+/* ---------------- LOGIN (PLAIN PASSWORD) ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -91,7 +95,8 @@ app.post("/login", async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    res.json({ success: false, message: "Login error" });
+    console.log(err);
+    res.json({ success: false });
   }
 });
 
