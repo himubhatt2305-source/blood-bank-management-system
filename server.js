@@ -3,14 +3,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo").default; // Fix for Node v24
+const MongoStore = require("connect-mongo").default; 
 
 const User = require("./models/User");
 const Donor = require("./models/donors");
 const Request = require("./models/request");
 
 const app = express();
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -38,20 +37,20 @@ app.post("/login", async (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/logout", (req, res) => { req.session.destroy(() => res.redirect("/login.html")); });
+app.post("/signup", async (req, res) => {
+  const { name, email, password } = req.body;
+  const exist = await User.findOne({ email });
+  if (exist) return res.json({ success: false, message: "User exists" });
+  await User.create({ name, email, password, role: "user" });
+  res.json({ success: true });
+});
 
+app.get("/logout", (req, res) => { req.session.destroy(() => res.redirect("/login.html")); });
 app.get("/me", (req, res) => { res.json({ user: req.session.user || null, role: req.session.role || null }); });
 
-/* --- DATA ROUTES (FIXED FOR FRONTEND) --- */
-app.get("/donors-list", async (req, res) => {
-  const data = await Donor.find();
-  res.json(data);
-});
-
-app.get("/requests-data", async (req, res) => {
-  const data = await Request.find();
-  res.json(data);
-});
+/* --- DATA ROUTES --- */
+app.get("/donors-list", async (req, res) => { res.json(await Donor.find()); });
+app.get("/requests-data", async (req, res) => { res.json(await Request.find()); });
 
 app.get("/donors", async (req, res) => {
   const d = await Donor.find();
@@ -62,11 +61,6 @@ app.get("/donors", async (req, res) => {
     Opos: d.filter(x => x.bloodGroup === "O+").length,
     ABpos: d.filter(x => x.bloodGroup === "AB+").length
   });
-});
-
-app.get("/requests", async (req, res) => {
-  const count = await Request.countDocuments();
-  res.json({ count });
 });
 
 app.post("/add-request", async (req, res) => {

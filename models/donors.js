@@ -12,6 +12,11 @@ const donorSchema = new mongoose.Schema({
     trim: true,
     uppercase: true
   },
+  gender: { // Added to match your signup form
+    type: String,
+    required: true,
+    trim: true
+  },
   phone: {
     type: String,
     required: true,

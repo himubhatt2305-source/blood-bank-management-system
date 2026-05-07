@@ -12,7 +12,7 @@ const requestSchema = new mongoose.Schema({
     trim: true,
     uppercase: true
   },
-  phone: {
+  phone: { // Essential for donors to contact the patient
     type: String,
     required: true,
     trim: true
@@ -24,7 +24,7 @@ const requestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "Pending"
+    default: "Pending" // Allows Admin to toggle "Approved" or "Rejected"
   },
   createdAt: {
     type: Date,
