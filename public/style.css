@@ -54,8 +54,6 @@ body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
 
 .table-container { background: white; border-radius: 15px; padding: 15px; margin-top: 20px; color: #111; }
 .table thead { background: #111; color: white; }
-<<<<<<< HEAD
 .table-responsive { overflow-x: auto; }
-=======
 .table-responsive { overflow-x: auto; }
->>>>>>> cc11cc3 (Added gitignore)
+

@@ -1,18 +1,31 @@
 const mongoose = require('mongoose');
 
 const donorSchema = new mongoose.Schema({
-  name: String,
-  bloodGroup: String,
-  phone: String,
-  city: String
-});
-const mongoose = require('mongoose');
-
-const donorSchema = new mongoose.Schema({
-  name: String,
-  bloodGroup: String,
-  phone: String,
-  city: String
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  bloodGroup: {
+    type: String,
+    required: true,
+    trim: true,
+    uppercase: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  city: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('Donor', donorSchema);

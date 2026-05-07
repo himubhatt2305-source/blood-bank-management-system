@@ -1,23 +1,34 @@
 const mongoose = require('mongoose');
 
 const requestSchema = new mongoose.Schema({
-  name: String,
-  bloodGroup: String,
-  city: String,
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  bloodGroup: {
+    type: String,
+    required: true,
+    trim: true,
+    uppercase: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  city: {
+    type: String,
+    required: true,
+    trim: true
+  },
   status: {
     type: String,
     default: "Pending"
-  }
-});
-const mongoose = require('mongoose');
-
-const requestSchema = new mongoose.Schema({
-  name: String,
-  bloodGroup: String,
-  city: String,
-  status: {
-    type: String,
-    default: "Pending"
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 
