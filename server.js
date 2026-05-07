@@ -25,8 +25,8 @@ mongoose.connect(process.env.MONGO_URI)
   process.exit(1);
 });
 
-/* ---------------- SESSION ---------------- */
-const MongoStore = require("connect-mongo");
+/* ---------------- SESSION (FIXED) ---------------- */
+app.set("trust proxy", 1);
 
 app.use(session({
   secret: "bloodbank_secret",
@@ -34,11 +34,14 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI
-  })
+  }),
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24
+  }
 }));
 
-/* ---------------- ROUTES ---------------- */
-
+/* ---------------- HOME ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
@@ -49,7 +52,9 @@ app.post("/signup", async (req, res) => {
     const { name, email, password } = req.body;
 
     const exist = await User.findOne({ email });
-    if (exist) return res.json({ success: false, message: "User already exists" });
+    if (exist) {
+      return res.json({ success: false, message: "User already exists" });
+    }
 
     await User.create({
       name,
@@ -61,7 +66,7 @@ app.post("/signup", async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    res.json({ success: false });
+    res.json({ success: false, message: "Signup error" });
   }
 });
 
@@ -86,7 +91,7 @@ app.post("/login", async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    res.json({ success: false });
+    res.json({ success: false, message: "Login error" });
   }
 });
 
