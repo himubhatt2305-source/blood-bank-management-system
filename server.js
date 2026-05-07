@@ -26,7 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
 });
 
 /* ---------------- SESSION ---------------- */
-app.set("trust proxy", 1);
+const MongoStore = require("connect-mongo");
 
 app.use(session({
   secret: "bloodbank_secret",
