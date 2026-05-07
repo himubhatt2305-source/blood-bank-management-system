@@ -30,9 +30,7 @@ app.use(session({
   secret: "bloodbank_secret_key",
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: MONGO_URL
-  })
+  store: MongoStore.create({ mongoUrl: MONGO_URL })
 }));
 
 /* ---------------- AUTH ---------------- */
@@ -41,19 +39,13 @@ function isLoggedIn(req, res, next) {
   res.redirect("/login");
 }
 
-function isAdmin(req, res, next) {
-  if (req.session.role === "admin") return next();
-  res.status(403).send("Access Denied");
-}
-
 /* ---------------- ROUTES ---------------- */
 
-// HOME
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- SIGNUP ---------------- */
+/* ---------------- AUTH ---------------- */
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -72,66 +64,50 @@ app.post("/signup", async (req, res) => {
       role: "user"
     });
 
-    res.json({ success: true, message: "Signup successful" });
+    res.json({ success: true });
 
-  } catch (err) {
-    res.json({ success: false, message: "Signup failed" });
+  } catch {
+    res.json({ success: false });
   }
 });
 
-/* ---------------- LOGIN ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
-    }
+    if (!user) return res.json({ success: false, message: "User not found" });
 
     const match = await bcrypt.compare(password, user.password);
 
-    if (!match) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
+    if (!match) return res.json({ success: false, message: "Wrong password" });
 
     req.session.user = user.email;
     req.session.role = user.role;
 
     res.json({ success: true });
 
-  } catch (err) {
-    res.json({ success: false, message: "Login failed" });
-  }
-});
-
-/* ---------------- LOGOUT ---------------- */
-app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
-  });
-});
-
-/* ---------------- DONORS ---------------- */
-app.post('/add-donor', isLoggedIn, async (req, res) => {
-  try {
-    req.body.bloodGroup = req.body.bloodGroup.trim().toUpperCase();
-    await Donor.create(req.body);
-    res.json({ success: true });
   } catch {
-    res.status(500).json({ success: false });
+    res.json({ success: false });
   }
 });
 
-app.get('/donors', isLoggedIn, async (req, res) => {
-  const donors = await Donor.find();
-  res.json(donors);
-});
+/* ---------------- SUMMARY ONLY (IMPORTANT FIX) ---------------- */
 
-app.delete('/delete-donor/:id', isAdmin, async (req, res) => {
-  await Donor.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+// ❌ NO FULL LIST
+app.get('/donors', async (req, res) => {
+  const donors = await Donor.find();
+
+  const summary = {
+    total: donors.length,
+    Apos: donors.filter(d => d.bloodGroup === "A+").length,
+    Bpos: donors.filter(d => d.bloodGroup === "B+").length,
+    Opos: donors.filter(d => d.bloodGroup === "O+").length,
+    ABpos: donors.filter(d => d.bloodGroup === "AB+").length,
+  };
+
+  res.json(summary);
 });
 
 /* ---------------- BLOOD SEARCH ---------------- */
@@ -143,11 +119,11 @@ app.get('/search-blood', async (req, res) => {
 
     blood = blood.trim().toUpperCase();
 
-    const donors = await Donor.find({ bloodGroup: blood });
+    const count = await Donor.countDocuments({ bloodGroup: blood });
 
     res.json({
-      available: donors.length > 0,
-      count: donors.length
+      available: count > 0,
+      count
     });
 
   } catch {
@@ -155,25 +131,10 @@ app.get('/search-blood', async (req, res) => {
   }
 });
 
-/* ---------------- REQUESTS ---------------- */
-app.post('/add-request', async (req, res) => {
-  await Request.create(req.body);
-  res.json({ success: true });
-});
-
-app.get('/requests', isLoggedIn, async (req, res) => {
-  const data = await Request.find();
-  res.json(data);
-});
-
-app.put('/accept-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, { status: "Approved" });
-  res.json({ success: true });
-});
-
-app.put('/reject-request/:id', isAdmin, async (req, res) => {
-  await Request.findByIdAndUpdate(req.params.id, { status: "Rejected" });
-  res.json({ success: true });
+/* ---------------- REQUEST COUNT ONLY ---------------- */
+app.get('/requests', async (req, res) => {
+  const count = await Request.countDocuments();
+  res.json({ count });
 });
 
 /* ---------------- SERVER ---------------- */
