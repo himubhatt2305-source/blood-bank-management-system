@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 
 const User = require("./models/User");
 const Donor = require("./models/donors");
-const Request = require("./models/Request");
+const Request = require("./models/request");
 
 const app = express();
 
