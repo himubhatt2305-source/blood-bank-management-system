@@ -15,22 +15,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ---------------- HOME ROUTE ---------------- */
+/* ---------------- HOME ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- DATABASE CONNECT ---------------- */
+/* ---------------- DB ---------------- */
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("DB Connected ✔"))
-.catch(err => console.log("DB Error:", err));
+.catch(err => console.log(err));
 
-/* ---------------- LOGIN (SIMPLE) ---------------- */
+/* ---------------- LOGIN ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ name: username });
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -43,7 +43,7 @@ app.post("/login", async (req, res) => {
     res.json({
       success: true,
       role: user.role,
-      username: user.username
+      username: user.name
     });
 
   } catch (err) {
@@ -52,16 +52,17 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ---------------- SIGNUP (OPTIONAL SIMPLE) ---------------- */
+/* ---------------- SIGNUP ---------------- */
 app.post("/signup", async (req, res) => {
   try {
-    const exist = await User.findOne({ username: req.body.username });
+    const exist = await User.findOne({ name: req.body.name });
 
     if (exist) {
-      return res.json({ success: false, message: "User already exists" });
+      return res.json({ success: false, message: "User exists" });
     }
 
     await User.create(req.body);
+
     res.json({ success: true });
 
   } catch (err) {
@@ -84,15 +85,15 @@ app.get("/donors", async (req, res) => {
 /* ---------------- REQUESTS ---------------- */
 app.get("/requests", async (req, res) => {
   try {
-    const count = await Request.countDocuments();
-    res.json({ count });
+    const requests = await Request.find();
+    res.json(requests);
   } catch (err) {
     console.log(err);
-    res.json({ count: 0 });
+    res.json([]);
   }
 });
 
-/* ---------------- SERVER START ---------------- */
+/* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
