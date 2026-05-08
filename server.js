@@ -16,8 +16,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("DB Connected ✔"))
-  .catch(err => console.log("DB Connection Error:", err));
+    .then(() => console.log("DB Connected ✔"))
+    .catch(err => console.log("DB Connection Error:", err));
 
 // Session Setup
 app.set("trust proxy", 1);
@@ -26,9 +26,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { 
-        secure: false, // Set to true only if using HTTPS
-        maxAge: 1000 * 60 * 60 * 24 
+    cookie: {
+        secure: false, // Set to true only if using HTTPS on Render
+        maxAge: 1000 * 60 * 60 * 24
     }
 }));
 
@@ -45,9 +45,9 @@ app.get("/request", (req, res) => {
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     try {
-        // SEARCH USING THE EXACT FIELD NAME FROM YOUR ATLAS SCREENSHOT
+        // Correctly matches the spaced field name in your Atlas database
         const user = await User.findOne({ "Email Address": username, password: password });
-        
+
         if (user) {
             req.session.user = user["Email Address"];
             req.session.role = user.role;
@@ -65,10 +65,17 @@ app.post("/signup", async (req, res) => {
         const { name, email, password } = req.body;
         const exist = await User.findOne({ "Email Address": email });
         if (exist) return res.json({ success: false, message: "User already exists" });
+
+        // FIXED: Must use "Email Address" as the key to match your database structure
+        await User.create({ 
+            "Email Address": email, 
+            password: password, 
+            role: "user" 
+        });
         
-        await User.create({ email, password, role: "user" });
         res.json({ success: true, message: "Signup successful!" });
     } catch (err) {
+        console.log(err);
         res.json({ success: false, message: "Signup failed" });
     }
 });

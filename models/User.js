@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  // UPDATED TO MATCH YOUR ATLAS SCREENSHOT
+  // MATCHING YOUR ATLAS FIELD NAME EXACTLY
   "Email Address": {
     type: String,
     required: true,
