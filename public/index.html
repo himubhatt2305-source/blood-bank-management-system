@@ -148,42 +148,28 @@
     </footer>
 
     <!-- SCRIPT -->
-   <script>
-document.addEventListener("DOMContentLoaded", function () {
+    <script>
 
-  async function loadDonors() {
-    try {
-      const res = await fetch('/donors');
-      const data = await res.json();
+        fetch('/donors')
+            .then(res => res.json())
+            .then(data => {
 
-      console.log("RAW DATA:", data);
+                const clean = v => (v || "").toUpperCase();
 
-      const clean = (v) => (v || "").toString().trim().toUpperCase();
+                document.getElementById("a-c").innerText =
+                    data.filter(d => clean(d.bloodGroup) === "A+").length + " Units";
 
-      const A = data.filter(d => clean(d.bloodGroup) === "A+").length;
-      const B = data.filter(d => clean(d.bloodGroup) === "B+").length;
-      const O = data.filter(d => clean(d.bloodGroup) === "O+").length;
-      const AB = data.filter(d => clean(d.bloodGroup) === "AB+").length;
+                document.getElementById("b-c").innerText =
+                    data.filter(d => clean(d.bloodGroup) === "B+").length + " Units";
 
-      const aEl = document.getElementById("a-c");
-      const bEl = document.getElementById("b-c");
-      const oEl = document.getElementById("o-c");
-      const abEl = document.getElementById("ab-c");
+                document.getElementById("o-c").innerText =
+                    data.filter(d => clean(d.bloodGroup) === "O+").length + " Units";
 
-      if (aEl) aEl.innerText = A + " Units";
-      if (bEl) bEl.innerText = B + " Units";
-      if (oEl) oEl.innerText = O + " Units";
-      if (abEl) abEl.innerText = AB + " Units";
+                document.getElementById("ab-c").innerText =
+                    data.filter(d => clean(d.bloodGroup) === "AB+").length + " Units";
+            });
+    </script>
 
-    } catch (err) {
-      console.error("ERROR:", err);
-    }
-  }
-
-  loadDonors();
-
-});
-</script>
 </body>
 
 </html>

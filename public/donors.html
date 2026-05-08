@@ -16,41 +16,46 @@
 
 <div class="content">
 
-    <h2>Donors List</h2>
+<h2>Donors List</h2>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Blood Group</th>
-                <th>Phone</th>
-                <th>City</th>
-            </tr>
-        </thead>
+<table border="1">
+<thead>
+<tr>
+<th>Name</th>
+<th>Blood Group</th>
+<th>Phone</th>
+<th>City</th>
+</tr>
+</thead>
 
-        <tbody id="list"></tbody>
-    </table>
+<tbody id="list"></tbody>
+</table>
 
 </div>
 
 <script>
 async function loadDonors() {
-    const res = await fetch('/donors');
-    const data = await res.json();
+    try {
+        const res = await fetch('/donors');
+        const data = await res.json();
 
-    let html = "";
+        let html = "";
 
-    data.forEach(d => {
-        html += `
-        <tr>
-            <td>${d.name}</td>
-            <td>${d.bloodGroup}</td>
-            <td>${d.phone}</td>
-            <td>${d.city}</td>
-        </tr>`;
-    });
+        data.forEach(d => {
+            html += `
+            <tr>
+                <td>${d.name}</td>
+                <td>${d.bloodGroup}</td>
+                <td>${d.phone}</td>
+                <td>${d.city}</td>
+            </tr>`;
+        });
 
-    document.getElementById("list").innerHTML = html;
+        document.getElementById("list").innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 loadDonors();

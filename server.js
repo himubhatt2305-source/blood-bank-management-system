@@ -32,13 +32,10 @@ app.post("/login", async (req, res) => {
 
     const user = await User.findOne({ name: username });
 
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
-    }
+    if (!user) return res.json({ success: false, message: "User not found" });
 
-    if (user.password !== password) {
+    if (user.password !== password)
       return res.json({ success: false, message: "Wrong password" });
-    }
 
     res.json({
       success: true,
@@ -52,50 +49,37 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ---------------- SIGNUP ---------------- */
-app.post("/signup", async (req, res) => {
+/* ---------------- ADD DONOR (IMPORTANT FIX) ---------------- */
+app.post("/add-donor", async (req, res) => {
   try {
-    const exist = await User.findOne({ name: req.body.name });
-
-    if (exist) {
-      return res.json({ success: false, message: "User exists" });
-    }
-
-    await User.create(req.body);
-
+    await Donor.create(req.body);
     res.json({ success: true });
-
   } catch (err) {
     console.log(err);
     res.json({ success: false });
   }
 });
 
-/* ---------------- DONORS ---------------- */
+/* ---------------- GET DONORS ---------------- */
 app.get("/donors", async (req, res) => {
   try {
     const donors = await Donor.find();
     res.json(donors);
   } catch (err) {
-    console.log(err);
     res.json([]);
   }
 });
 
-/* ---------------- REQUESTS ---------------- */
+/* ---------------- GET REQUESTS ---------------- */
 app.get("/requests", async (req, res) => {
   try {
     const requests = await Request.find();
     res.json(requests);
   } catch (err) {
-    console.log(err);
     res.json([]);
   }
 });
 
 /* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server running ✔ on port", PORT);
-});
+app.listen(PORT, () => console.log("Server running ✔"));
