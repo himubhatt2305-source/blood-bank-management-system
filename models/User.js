@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  email: {
+  // UPDATED TO MATCH YOUR ATLAS SCREENSHOT
+  "Email Address": {
     type: String,
     required: true,
     unique: true

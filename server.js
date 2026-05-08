@@ -43,13 +43,13 @@ app.get("/request", (req, res) => {
 
 /* --- AUTH ROUTES --- */
 app.post("/login", async (req, res) => {
-    const { username, password } = req.body; // 'username' comes from the HTML input ID
+    const { username, password } = req.body;
     try {
-        // We search the 'email' field in Atlas using the 'username' from the form
-        const user = await User.findOne({ email: username, password: password });
+        // SEARCH USING THE EXACT FIELD NAME FROM YOUR ATLAS SCREENSHOT
+        const user = await User.findOne({ "Email Address": username, password: password });
         
         if (user) {
-            req.session.user = user.email;
+            req.session.user = user["Email Address"];
             req.session.role = user.role;
             res.json({ success: true, role: user.role });
         } else {
@@ -63,7 +63,7 @@ app.post("/login", async (req, res) => {
 app.post("/signup", async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        const exist = await User.findOne({ email });
+        const exist = await User.findOne({ "Email Address": email });
         if (exist) return res.json({ success: false, message: "User already exists" });
         
         await User.create({ email, password, role: "user" });

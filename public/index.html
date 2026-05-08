@@ -151,14 +151,14 @@
     <script>
     // Fetch units for the 4 tabs
     fetch('/donors-count')
-        .then(res => res.json())
-        .then(data => {
-            document.querySelector('.a-plus p').innerText = data.Apos + " Units";
-            document.querySelector('.b-plus p').innerText = data.Bpos + " Units";
-            document.querySelector('.o-plus p').innerText = data.Opos + " Units";
-            document.querySelector('.ab-plus p').innerText = data.ABpos + " Units";
-        })
-        .catch(err => console.error("Could not load counts"));
+    .then(res => res.json())
+    .then(data => {
+        // Use the IDs you already have in the HTML
+        document.getElementById('a-c').innerText = data.Apos + " Units";
+        document.getElementById('b-c').innerText = data.Bpos + " Units";
+        document.getElementById('o-c').innerText = data.Opos + " Units";
+        document.getElementById('ab-c').innerText = data.ABpos + " Units";
+    });
 </script>
 
 </body>
