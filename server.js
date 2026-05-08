@@ -15,12 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ---------------- DB ---------------- */
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("DB Connected ✔"))
-.catch(err => console.log(err));
-
-/* ---------------- HOME ---------------- */
+/* ---------------- ROUTES ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
@@ -29,12 +24,15 @@ app.get("/", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const exist = await User.findOne({ email: req.body.email });
-    if (exist) return res.json({ success: false, message: "User exists" });
+    if (exist) {
+      return res.json({ success: false, message: "User already exists" });
+    }
 
     await User.create(req.body);
     res.json({ success: true });
 
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.json({ success: false });
   }
 });
@@ -44,34 +42,59 @@ app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
-    if (!user) return res.json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
 
-    if (user.password !== req.body.password)
+    if (user.password !== req.body.password) {
       return res.json({ success: false, message: "Wrong password" });
+    }
 
-    res.json({ success: true, role: user.role });
+    res.json({
+      success: true,
+      role: user.role
+    });
 
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.json({ success: false });
   }
 });
 
-/* ---------------- DONORS (FIXED) ---------------- */
+/* ---------------- DONORS ---------------- */
 app.get("/donors", async (req, res) => {
   try {
     const donors = await Donor.find();
     res.json(donors);
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.json([]);
   }
 });
 
 /* ---------------- REQUESTS ---------------- */
 app.get("/requests", async (req, res) => {
-  const count = await Request.countDocuments();
-  res.json({ count });
+  try {
+    const count = await Request.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    console.log(err);
+    res.json({ count: 0 });
+  }
 });
 
-/* ---------------- SERVER ---------------- */
+/* ---------------- DB + SERVER START ---------------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running ✔"));
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+  console.log("DB Connected ✔");
+
+  app.listen(PORT, () => {
+    console.log("Server running ✔ on port", PORT);
+  });
+
+})
+.catch(err => {
+  console.log("DB CONNECTION ERROR ❌", err);
+});
