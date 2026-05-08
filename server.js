@@ -43,9 +43,11 @@ app.get("/request", (req, res) => {
 
 /* --- AUTH ROUTES --- */
 app.post("/login", async (req, res) => {
+    // login.html sends 'username' and 'password' from form inputs
     const { username, password } = req.body;
+
     try {
-        // Correctly matches the spaced field name in your Atlas database
+        // USE THE QUOTED FIELD NAME "Email Address" TO MATCH ATLAS
         const user = await User.findOne({ "Email Address": username, password: password });
 
         if (user) {
