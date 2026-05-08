@@ -44,33 +44,26 @@
 </div>
 
 <script>
-    async function loadDonors() {
-        try {
-            const response = await fetch('/donors-list');
-            const data = await response.json();
-            console.log("Donors loaded:", data);
-            
-            const list = document.getElementById('finalList'); // Ensure your <tbody> has id="finalList"
-            if (!data || data.length === 0) {
-                list.innerHTML = '<tr><td colspan="5" class="text-center">No data found in database.</td></tr>';
-                return;
-            }
-
-            list.innerHTML = data.map(d => `
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                    <td>${d.name}</td>
-                    <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
-                    <td>${d.phone}</td>
-                    <td>${d.city}</td>
-                    <td>${d.gender || 'N/A'}</td>
-                </tr>
-            `).join('');
-        } catch (error) {
-            console.error("Error:", error);
-            document.getElementById('finalList').innerHTML = '<tr><td colspan="5">Error loading list.</td></tr>';
+    async function getDonors() {
+        const res = await fetch('/donors-list');
+        const data = await res.json();
+        
+        const tableBody = document.getElementById('finalList'); // Ensure your <tbody> has id="finalList"
+        if (data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4">No donors found</td></tr>';
+            return;
         }
+
+        tableBody.innerHTML = data.map(d => `
+            <tr style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <td>${d.name}</td>
+                <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
+                <td>${d.phone}</td>
+                <td>${d.city}</td>
+            </tr>
+        `).join('');
     }
-    window.onload = loadDonors;
+    window.onload = getDonors;
 </script>
 
 </body>

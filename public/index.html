@@ -149,26 +149,17 @@
 
     <!-- SCRIPT -->
     <script>
-
-        fetch('/donors')
-            .then(res => res.json())
-            .then(data => {
-
-                const clean = v => (v || "").toUpperCase();
-
-                document.getElementById("a-c").innerText =
-                    data.filter(d => clean(d.bloodGroup) === "A+").length + " Units";
-
-                document.getElementById("b-c").innerText =
-                    data.filter(d => clean(d.bloodGroup) === "B+").length + " Units";
-
-                document.getElementById("o-c").innerText =
-                    data.filter(d => clean(d.bloodGroup) === "O+").length + " Units";
-
-                document.getElementById("ab-c").innerText =
-                    data.filter(d => clean(d.bloodGroup) === "AB+").length + " Units";
-            });
-    </script>
+    // Fetch units for the 4 tabs
+    fetch('/donors-count')
+        .then(res => res.json())
+        .then(data => {
+            document.querySelector('.a-plus p').innerText = data.Apos + " Units";
+            document.querySelector('.b-plus p').innerText = data.Bpos + " Units";
+            document.querySelector('.o-plus p').innerText = data.Opos + " Units";
+            document.querySelector('.ab-plus p').innerText = data.ABpos + " Units";
+        })
+        .catch(err => console.error("Could not load counts"));
+</script>
 
 </body>
 
