@@ -27,7 +27,7 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: { 
-        secure: false, // Set to true if using HTTPS on Render
+        secure: false, // Set to true only if using HTTPS
         maxAge: 1000 * 60 * 60 * 24 
     }
 }));
@@ -43,9 +43,9 @@ app.get("/request", (req, res) => {
 
 /* --- AUTH ROUTES --- */
 app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body; // 'username' comes from the HTML input ID
     try {
-        // FIXED: Searching 'email' field because that's what is in your Atlas
+        // We search the 'email' field in Atlas using the 'username' from the form
         const user = await User.findOne({ email: username, password: password });
         
         if (user) {
@@ -66,7 +66,7 @@ app.post("/signup", async (req, res) => {
         const exist = await User.findOne({ email });
         if (exist) return res.json({ success: false, message: "User already exists" });
         
-        await User.create({ name, email, password, role: "user" });
+        await User.create({ email, password, role: "user" });
         res.json({ success: true, message: "Signup successful!" });
     } catch (err) {
         res.json({ success: false, message: "Signup failed" });
@@ -82,9 +82,7 @@ app.post("/add-donor", async (req, res) => {
     try {
         await Donor.create(req.body);
         res.json({ success: true });
-    } catch (err) {
-        res.json({ success: false });
-    }
+    } catch (err) { res.json({ success: false }); }
 });
 
 app.get("/donors-list", async (req, res) => {
@@ -106,18 +104,14 @@ app.get("/requests-data", async (req, res) => {
     try {
         const data = await Request.find();
         res.json(data);
-    } catch (err) {
-        res.status(500).json([]);
-    }
+    } catch (err) { res.status(500).json([]); }
 });
 
 app.post("/add-request", async (req, res) => {
     try {
         await Request.create({ ...req.body, status: "Pending" });
         res.json({ success: true });
-    } catch (err) {
-        res.json({ success: false });
-    }
+    } catch (err) { res.json({ success: false }); }
 });
 
 const PORT = process.env.PORT || 3000;

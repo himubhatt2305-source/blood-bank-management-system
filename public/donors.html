@@ -1,71 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
     <title>Donors | Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <!-- SIDEBAR -->
     <div class="sidebar">
         <h4 class="text-center mb-4">🩸 Blood Bank</h4>
-
         <a href="donors.html">Donors</a>
         <a href="requests.html">Requests</a>
         <a href="/logout">Logout</a>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
-
         <div class="card-box">
             <h3>Donors List</h3>
-
             <table class="table table-dark table-hover mt-3">
                 <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Blood Group</th>
-                        <th>Phone</th>
-                        <th>City</th>
-                    </tr>
+                    <tr><th>Name</th><th>Blood Group</th><th>Phone</th><th>City</th></tr>
                 </thead>
-
                 <tbody id="list"></tbody>
             </table>
         </div>
-
     </div>
 
     <script>
         async function getDonors() {
-            const res = await fetch('/donors-list');
-            const data = await res.json();
+            try {
+                const res = await fetch('/donors-list');
+                const data = await res.json();
+                const tableBody = document.getElementById('list');
+                
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No donors found</td></tr>';
+                    return;
+                }
 
-            const tableBody = document.getElementById('list');
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4">No donors found</td></tr>';
-                return;
+                tableBody.innerHTML = data.map(d => `
+                    <tr>
+                        <td>${d.name}</td>
+                        <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
+                        <td>${d.phone}</td>
+                        <td>${d.city}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                document.getElementById('list').innerHTML = '<tr><td colspan="4">Error loading data</td></tr>';
             }
-
-            tableBody.innerHTML = data.map(d => `
-            <tr style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <td>${d.name}</td>
-                <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
-                <td>${d.phone}</td>
-                <td>${d.city}</td>
-            </tr>
-        `).join('');
         }
         window.onload = getDonors;
     </script>
-
 </body>
-
 </html>
