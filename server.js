@@ -14,17 +14,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-mongoose.connect(process.env.MONGO_URI).then(() => console.log("DB Connected ✔"));
+// Database Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("DB Connected ✔"))
+  .catch(err => console.log("DB Connection Error:", err));
 
+// Session Setup
+app.set("trust proxy", 1);
 app.use(session({
     secret: "bloodbank_secret_key",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
+    cookie: { 
+        secure: false, // Set to true if using HTTPS on Render
+        maxAge: 1000 * 60 * 60 * 24 
+    }
 }));
 
-/* --- ROUTE HANDLERS (Fixes "Cannot GET /donors") --- */
+/* --- PAGE ROUTES --- */
 app.get("/donors", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "donors.html"));
 });
@@ -33,7 +41,52 @@ app.get("/request", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "request.html"));
 });
 
+/* --- AUTH ROUTES --- */
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        // FIXED: Searching 'email' field because that's what is in your Atlas
+        const user = await User.findOne({ email: username, password: password });
+        
+        if (user) {
+            req.session.user = user.email;
+            req.session.role = user.role;
+            res.json({ success: true, role: user.role });
+        } else {
+            res.json({ success: false, message: "Invalid email or password" });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+app.post("/signup", async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const exist = await User.findOne({ email });
+        if (exist) return res.json({ success: false, message: "User already exists" });
+        
+        await User.create({ name, email, password, role: "user" });
+        res.json({ success: true, message: "Signup successful!" });
+    } catch (err) {
+        res.json({ success: false, message: "Signup failed" });
+    }
+});
+
+app.get("/logout", (req, res) => {
+    req.session.destroy(() => res.redirect("/login.html"));
+});
+
 /* --- DATA API --- */
+app.post("/add-donor", async (req, res) => {
+    try {
+        await Donor.create(req.body);
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
 app.get("/donors-list", async (req, res) => {
     const data = await Donor.find();
     res.json(data);
@@ -57,15 +110,13 @@ app.get("/requests-data", async (req, res) => {
         res.status(500).json([]);
     }
 });
-app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username, password });
-    if (user) {
-        req.session.user = user.username;
-        req.session.role = user.role;
-        res.json({ success: true, role: user.role });
-    } else {
-        res.json({ success: false, message: "Invalid credentials" });
+
+app.post("/add-request", async (req, res) => {
+    try {
+        await Request.create({ ...req.body, status: "Pending" });
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
     }
 });
 
