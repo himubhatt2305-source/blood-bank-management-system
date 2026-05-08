@@ -24,13 +24,11 @@
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const msg = document.getElementById("msg");
-      
+
       if (!username || !password) {
         msg.innerText = "Please fill all fields";
         return;
       }
-
-      msg.innerText = "Authenticating...";
 
       try {
         const res = await fetch('/login', {
@@ -40,17 +38,14 @@
         });
         const data = await res.json();
         if (data.success) {
-          msg.style.color = "lime";
-          msg.innerText = "Login Success ✔";
           window.location.href = "/donors.html";
         } else {
-          msg.style.color = "red";
           msg.innerText = data.message;
         }
       } catch (err) {
-        msg.innerText = "Server error. Try again.";
+        msg.innerText = "Connection error. Try again.";
       }
     }
-  </script>
+</script>
 </body>
 </html>
