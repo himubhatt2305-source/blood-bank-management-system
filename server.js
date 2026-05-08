@@ -1,8 +1,9 @@
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
 
 const User = require("./models/User");
 const Donor = require("./models/donors");
@@ -10,92 +11,65 @@ const Request = require("./models/request");
 
 const app = express();
 
-/* ---------------- MIDDLEWARE ---------------- */
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ---------------- HOME ---------------- */
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
-});
-
-/* ---------------- DB ---------------- */
+// DB Connection
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("DB Connected ✔"))
-.catch(err => console.log(err));
+    .then(() => console.log("DB Connected ✔"))
+    .catch(err => console.log("DB Error:", err));
 
-/* ---------------- LOGIN ---------------- */
+// Session Fix for Render
+app.set("trust proxy", 1);
+app.use(session({
+    secret: "bloodbank_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: { 
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
+        maxAge: 1000 * 60 * 60 * 24 
+    }
+}));
+
+/* --- DATA API ROUTES --- */
+app.get("/donors-list", async (req, res) => {
+    try {
+        const data = await Donor.find();
+        res.status(200).json(data);
+    } catch (err) { res.status(500).json([]); }
+});
+
+app.get("/donors-count", async (req, res) => {
+    try {
+        const d = await Donor.find();
+        res.json({
+            Apos: d.filter(x => x.bloodGroup === "A+").length,
+            Bpos: d.filter(x => x.bloodGroup === "B+").length,
+            Opos: d.filter(x => x.bloodGroup === "O+").length,
+            ABpos: d.filter(x => x.bloodGroup === "AB+").length
+        });
+    } catch (err) { res.json({ Apos:0, Bpos:0, Opos:0, ABpos:0 }); }
+});
+
 app.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ name: username });
-
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (user) {
+        req.session.user = user.email;
+        req.session.role = user.role;
+        return res.json({ success: true });
     }
-
-    if (user.password !== password) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
-
-    res.json({
-      success: true,
-      role: user.role,
-      username: user.name
-    });
-
-  } catch (err) {
-    console.log(err);
     res.json({ success: false });
-  }
 });
 
-/* ---------------- SIGNUP ---------------- */
-app.post("/signup", async (req, res) => {
-  try {
-    const exist = await User.findOne({ name: req.body.name });
-
-    if (exist) {
-      return res.json({ success: false, message: "User exists" });
-    }
-
-    await User.create(req.body);
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.log(err);
-    res.json({ success: false });
-  }
+// Serve the index.html for the root
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-/* ---------------- DONORS ---------------- */
-app.get("/donors", async (req, res) => {
-  try {
-    const donors = await Donor.find();
-    res.json(donors);
-  } catch (err) {
-    console.log(err);
-    res.json([]);
-  }
-});
-
-/* ---------------- REQUESTS ---------------- */
-app.get("/requests", async (req, res) => {
-  try {
-    const requests = await Request.find();
-    res.json(requests);
-  } catch (err) {
-    console.log(err);
-    res.json([]);
-  }
-});
-
-/* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server running ✔ on port", PORT);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
