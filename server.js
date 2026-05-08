@@ -10,21 +10,22 @@ const Request = require("./models/request");
 
 const app = express();
 
+/* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-/* DB */
+/* ---------------- DB ---------------- */
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("DB Connected ✔"))
 .catch(err => console.log(err));
 
-/* HOME */
+/* ---------------- HOME ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* SIGNUP */
+/* ---------------- SIGNUP ---------------- */
 app.post("/signup", async (req, res) => {
   try {
     const exist = await User.findOne({ email: req.body.email });
@@ -38,7 +39,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-/* LOGIN */
+/* ---------------- LOGIN ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -55,7 +56,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* DONORS */
+/* ---------------- DONORS (FIXED) ---------------- */
 app.get("/donors", async (req, res) => {
   try {
     const donors = await Donor.find();
@@ -65,11 +66,12 @@ app.get("/donors", async (req, res) => {
   }
 });
 
-/* REQUEST COUNT */
+/* ---------------- REQUESTS ---------------- */
 app.get("/requests", async (req, res) => {
   const count = await Request.countDocuments();
   res.json({ count });
 });
 
+/* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running ✔"));
