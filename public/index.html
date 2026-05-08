@@ -148,42 +148,41 @@
     </footer>
 
     <!-- SCRIPT -->
-    <script>
-async function loadDonors() {
-  try {
-    const res = await fetch('/donors');
-    const data = await res.json();
+   <script>
+document.addEventListener("DOMContentLoaded", function () {
 
-    console.log("RAW DATA:", data);
+  async function loadDonors() {
+    try {
+      const res = await fetch('/donors');
+      const data = await res.json();
 
-    if (!Array.isArray(data)) {
-      console.error("Invalid API response");
-      return;
+      console.log("RAW DATA:", data);
+
+      const clean = (v) => (v || "").toString().trim().toUpperCase();
+
+      const A = data.filter(d => clean(d.bloodGroup) === "A+").length;
+      const B = data.filter(d => clean(d.bloodGroup) === "B+").length;
+      const O = data.filter(d => clean(d.bloodGroup) === "O+").length;
+      const AB = data.filter(d => clean(d.bloodGroup) === "AB+").length;
+
+      const aEl = document.getElementById("a-c");
+      const bEl = document.getElementById("b-c");
+      const oEl = document.getElementById("o-c");
+      const abEl = document.getElementById("ab-c");
+
+      if (aEl) aEl.innerText = A + " Units";
+      if (bEl) bEl.innerText = B + " Units";
+      if (oEl) oEl.innerText = O + " Units";
+      if (abEl) abEl.innerText = AB + " Units";
+
+    } catch (err) {
+      console.error("ERROR:", err);
     }
-
-    const clean = (v) => (v || "").toString().trim().toUpperCase();
-
-    const A = data.filter(d => clean(d.bloodGroup) === "A+").length;
-    const B = data.filter(d => clean(d.bloodGroup) === "B+").length;
-    const O = data.filter(d => clean(d.bloodGroup) === "O+").length;
-    const AB = data.filter(d => clean(d.bloodGroup) === "AB+").length;
-
-    const aEl = document.getElementById("a-c");
-    const bEl = document.getElementById("b-c");
-    const oEl = document.getElementById("o-c");
-    const abEl = document.getElementById("ab-c");
-
-    if (aEl) aEl.innerText = A + " Units";
-    if (bEl) bEl.innerText = B + " Units";
-    if (oEl) oEl.innerText = O + " Units";
-    if (abEl) abEl.innerText = AB + " Units";
-
-  } catch (err) {
-    console.error("Frontend Error:", err);
   }
-}
 
-loadDonors();
+  loadDonors();
+
+});
 </script>
 </body>
 

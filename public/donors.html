@@ -1,28 +1,71 @@
 <!DOCTYPE html>
-<html>
-<head><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Donors | Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
-    <div class="sidebar">
-        <h4 class="text-center mb-4">Dashboard</h4>
-        <a href="donors.html">Donors List</a>
-        <a href="requests.html">Blood Requests</a>
-        <a href="/logout">Logout</a>
+
+<div class="sidebar">
+    <h4 class="text-center mb-4">Dashboard</h4>
+    <a href="donors.html">Donors List</a>
+    <a href="requests.html">Blood Requests</a>
+    <a href="/logout">Logout</a>
+</div>
+
+<div class="content">
+
+    <div class="card-box">
+        <h3>🩸 Donor Management</h3>
+
+        <table class="table table-dark mt-4">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Blood Group</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+
+            <tbody id="list"></tbody>
+        </table>
+
     </div>
-    <div class="content">
-        <div class="card-box">
-            <h3>🩸 Donor Management</h3>
-            <table class="table table-dark mt-4">
-                <thead><tr><th>Name</th><th>Group</th><th>Phone</th><th>City</th></tr></thead>
-                <tbody id="list"></tbody>
-            </table>
-        </div>
-    </div>
-    <script>
-        fetch('/donors-list').then(r=>r.json()).then(data => {
-            document.getElementById('list').innerHTML = data.map(d => `
-                <tr><td>${d.name}</td><td>${d.bloodGroup}</td><td>${d.phone}</td><td>${d.city}</td></tr>
-            `).join('');
-        });
-    </script>
+
+</div>
+
+<script>
+async function loadDonors() {
+    try {
+        const res = await fetch('/donors');
+        const data = await res.json();
+
+        console.log("DONORS:", data);
+
+        document.getElementById('list').innerHTML = data.map(d => `
+            <tr>
+                <td>${d.name}</td>
+                <td>${d.bloodGroup}</td>
+                <td>${d.phone}</td>
+                <td>${d.city}</td>
+            </tr>
+        `).join('');
+
+    } catch (err) {
+        console.error("Error loading donors:", err);
+    }
+}
+
+loadDonors();
+</script>
+
 </body>
 </html>
