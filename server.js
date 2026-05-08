@@ -15,21 +15,36 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ---------------- ROUTES ---------------- */
+/* ---------------- HOME ROUTE ---------------- */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ---------------- SIGNUP ---------------- */
-app.post("/signup", async (req, res) => {
+/* ---------------- DATABASE CONNECT ---------------- */
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("DB Connected ✔"))
+.catch(err => console.log("DB Error:", err));
+
+/* ---------------- LOGIN (SIMPLE) ---------------- */
+app.post("/login", async (req, res) => {
   try {
-    const exist = await User.findOne({ email: req.body.email });
-    if (exist) {
-      return res.json({ success: false, message: "User already exists" });
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
 
-    await User.create(req.body);
-    res.json({ success: true });
+    if (user.password !== password) {
+      return res.json({ success: false, message: "Wrong password" });
+    }
+
+    res.json({
+      success: true,
+      role: user.role,
+      username: user.username
+    });
 
   } catch (err) {
     console.log(err);
@@ -37,23 +52,17 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-/* ---------------- LOGIN ---------------- */
-app.post("/login", async (req, res) => {
+/* ---------------- SIGNUP (OPTIONAL SIMPLE) ---------------- */
+app.post("/signup", async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const exist = await User.findOne({ username: req.body.username });
 
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
+    if (exist) {
+      return res.json({ success: false, message: "User already exists" });
     }
 
-    if (user.password !== req.body.password) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
-
-    res.json({
-      success: true,
-      role: user.role
-    });
+    await User.create(req.body);
+    res.json({ success: true });
 
   } catch (err) {
     console.log(err);
@@ -83,18 +92,9 @@ app.get("/requests", async (req, res) => {
   }
 });
 
-/* ---------------- DB + SERVER START ---------------- */
+/* ---------------- SERVER START ---------------- */
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("DB Connected ✔");
-
-  app.listen(PORT, () => {
-    console.log("Server running ✔ on port", PORT);
-  });
-
-})
-.catch(err => {
-  console.log("DB CONNECTION ERROR ❌", err);
+app.listen(PORT, () => {
+  console.log("Server running ✔ on port", PORT);
 });
