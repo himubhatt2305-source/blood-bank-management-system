@@ -12,49 +12,49 @@
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h4 class="text-center mb-4">🩸 Blood Bank</h4>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4 class="text-center mb-4">🩸 Blood Bank</h4>
 
-    <a href="donors.html">Donors</a>
-    <a href="requests.html">Requests</a>
-    <a href="/logout">Logout</a>
-</div>
-
-<!-- CONTENT -->
-<div class="content">
-
-    <div class="card-box">
-        <h3>Blood Requests</h3>
-
-        <table class="table table-dark table-hover mt-3">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Blood Group</th>
-                    <th>City</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="requestTable"></tbody>
-        </table>
+        <a href="donors.html">Donors</a>
+        <a href="requests.html">Requests</a>
+        <a href="/logout">Logout</a>
     </div>
 
-</div>
+    <!-- CONTENT -->
+    <div class="content">
 
-<script>
-async function loadRequests() {
-    try {
-        const res = await fetch('/requests');
-        const data = await res.json();
+        <div class="card-box">
+            <h3>Blood Requests</h3>
 
-        console.log("REQUESTS:", data);
+            <table class="table table-dark table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Blood Group</th>
+                        <th>City</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-        let html = "";
+                <tbody id="requestTable"></tbody>
+            </table>
+        </div>
 
-        data.forEach(r => {
-            html += `
+    </div>
+
+    <script>
+        async function loadRequests() {
+            try {
+                const res = await fetch('/requests-data');
+                const data = await res.json();
+
+                console.log("REQUESTS:", data);
+
+                let html = "";
+
+                data.forEach(r => {
+                    html += `
                 <tr>
                     <td>${r.name}</td>
                     <td>${r.bloodGroup}</td>
@@ -62,17 +62,18 @@ async function loadRequests() {
                     <td><span class="badge bg-warning">${r.status || "Pending"}</span></td>
                 </tr>
             `;
-        });
+                });
 
-        document.getElementById("requestTable").innerHTML = html;
+                document.getElementById("requestTable").innerHTML = html;
 
-    } catch (err) {
-        console.error("Error loading requests:", err);
-    }
-}
+            } catch (err) {
+                console.error("Error loading requests:", err);
+            }
+        }
 
-loadRequests();
-</script>
+        loadRequests();
+    </script>
 
 </body>
+
 </html>

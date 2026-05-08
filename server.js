@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo").default; 
+const MongoStore = require("connect-mongo").default;
 
 const User = require("./models/User");
 const Donor = require("./models/donors");
@@ -17,11 +17,11 @@ app.use(express.static(path.join(__dirname, "public")));
 mongoose.connect(process.env.MONGO_URI).then(() => console.log("DB Connected ✔"));
 
 app.use(session({
-  secret: "bloodbank_secret_key",
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-  cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
+    secret: "bloodbank_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
 /* --- ROUTE HANDLERS (Fixes "Cannot GET /donors") --- */
@@ -36,7 +36,7 @@ app.get("/request", (req, res) => {
 /* --- DATA API --- */
 app.get("/donors-list", async (req, res) => {
     const data = await Donor.find();
-    res.json(data); 
+    res.json(data);
 });
 
 app.get("/donors-count", async (req, res) => {
@@ -47,6 +47,26 @@ app.get("/donors-count", async (req, res) => {
         Opos: d.filter(x => x.bloodGroup === "O+").length,
         ABpos: d.filter(x => x.bloodGroup === "AB+").length
     });
+});
+
+app.get("/requests-data", async (req, res) => {
+    try {
+        const data = await Request.find();
+        res.json(data);
+    } catch (err) {
+        res.status(500).json([]);
+    }
+});
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username, password });
+    if (user) {
+        req.session.user = user.username;
+        req.session.role = user.role;
+        res.json({ success: true, role: user.role });
+    } else {
+        res.json({ success: false, message: "Invalid credentials" });
+    }
 });
 
 const PORT = process.env.PORT || 3000;
