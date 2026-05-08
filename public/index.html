@@ -154,47 +154,35 @@ async function loadDonors() {
     const res = await fetch('/donors');
     const data = await res.json();
 
-    console.log("DONORS:", data);
+    console.log("RAW DATA:", data);
 
-    const clean = (v) => (v || "").trim().toUpperCase();
+    if (!Array.isArray(data)) {
+      console.error("Invalid API response");
+      return;
+    }
 
-    const Apos = data.filter(d => clean(d.bloodGroup) === "A+").length;
-    const Bpos = data.filter(d => clean(d.bloodGroup) === "B+").length;
-    const Opos = data.filter(d => clean(d.bloodGroup) === "O+").length;
-    const ABpos = data.filter(d => clean(d.bloodGroup) === "AB+").length;
+    const clean = (v) => (v || "").toString().trim().toUpperCase();
 
-    document.getElementById("a-c").innerText = Apos + " Units";
-    document.getElementById("b-c").innerText = Bpos + " Units";
-    document.getElementById("o-c").innerText = Opos + " Units";
-    document.getElementById("ab-c").innerText = ABpos + " Units";
+    const A = data.filter(d => clean(d.bloodGroup) === "A+").length;
+    const B = data.filter(d => clean(d.bloodGroup) === "B+").length;
+    const O = data.filter(d => clean(d.bloodGroup) === "O+").length;
+    const AB = data.filter(d => clean(d.bloodGroup) === "AB+").length;
+
+    const aEl = document.getElementById("a-c");
+    const bEl = document.getElementById("b-c");
+    const oEl = document.getElementById("o-c");
+    const abEl = document.getElementById("ab-c");
+
+    if (aEl) aEl.innerText = A + " Units";
+    if (bEl) bEl.innerText = B + " Units";
+    if (oEl) oEl.innerText = O + " Units";
+    if (abEl) abEl.innerText = AB + " Units";
 
   } catch (err) {
-    console.error("Error loading donors:", err);
+    console.error("Frontend Error:", err);
   }
 }
 
-/* SEARCH FUNCTION */
-async function search() {
-  try {
-    const bg = document.getElementById("checkBG").value.trim().toUpperCase();
-
-    const res = await fetch('/donors');
-    const data = await res.json();
-
-    const found = data.some(d =>
-      (d.bloodGroup || "").trim().toUpperCase() === bg
-    );
-
-    document.getElementById("res").innerHTML =
-      found ? "✅ Blood Available in System" : "❌ Not Available";
-
-  } catch (err) {
-    console.error(err);
-    document.getElementById("res").innerHTML = "⚠️ Error checking data";
-  }
-}
-
-/* INIT */
 loadDonors();
 </script>
 </body>
