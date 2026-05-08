@@ -25,22 +25,25 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("DB Connected ✔"))
 .catch(err => console.log(err));
 
-/* ---------------- LOGIN ---------------- */
+/* ---------------- LOGIN (FIXED) ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ name: username });
+    const user = await User.findOne({ username });
 
-    if (!user) return res.json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
 
-    if (user.password !== password)
+    if (user.password !== password) {
       return res.json({ success: false, message: "Wrong password" });
+    }
 
     res.json({
       success: true,
       role: user.role,
-      username: user.name
+      username: user.username
     });
 
   } catch (err) {
@@ -49,7 +52,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ---------------- ADD DONOR (IMPORTANT FIX) ---------------- */
+/* ---------------- ADD DONOR ---------------- */
 app.post("/add-donor", async (req, res) => {
   try {
     await Donor.create(req.body);
@@ -66,6 +69,7 @@ app.get("/donors", async (req, res) => {
     const donors = await Donor.find();
     res.json(donors);
   } catch (err) {
+    console.log(err);
     res.json([]);
   }
 });
@@ -76,10 +80,14 @@ app.get("/requests", async (req, res) => {
     const requests = await Request.find();
     res.json(requests);
   } catch (err) {
+    console.log(err);
     res.json([]);
   }
 });
 
 /* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running ✔"));
+
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
