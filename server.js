@@ -3,26 +3,27 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo"); // Fixed Import
+const MongoStore = require("connect-mongo"); // Fixed Import Style
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// 1. Database Connection
+// 1. Database Connection - Fixed for Render
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("DB Connected ✔"))
     .catch(err => console.log("DB Connection Error:", err));
 
-// 2. Session Setup - Fixed for connect-mongo v4+
+// 2. Session Setup - Updated for current connect-mongo version
 app.set("trust proxy", 1);
 app.use(session({
     secret: "bloodbank_secret_key",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ 
-        mongoUrl: process.env.MONGO_URI 
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: 'sessions'
     }),
     cookie: { 
         secure: true, 
@@ -35,7 +36,7 @@ app.use(session({
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     try {
-        // Direct Query for spaced field name
+        // Direct Query for spaced field name from your database screenshot
         const user = await mongoose.connection.db.collection("users").findOne({ 
             "Email Address": username, 
             "password": password 
@@ -81,7 +82,11 @@ app.post("/add-donor", async (req, res) => {
 
 app.post("/add-request", async (req, res) => {
     try {
-        await mongoose.connection.db.collection("requests").insertOne({...req.body, status: "Pending", createdAt: new Date()});
+        await mongoose.connection.db.collection("requests").insertOne({
+            ...req.body, 
+            status: "Pending", 
+            createdAt: new Date()
+        });
         res.json({ success: true });
     } catch (err) { res.json({ success: false }); }
 });
@@ -91,6 +96,10 @@ app.get("/requests-data", async (req, res) => {
         const data = await mongoose.connection.db.collection("requests").find({}).toArray();
         res.json(data);
     } catch (err) { res.json([]); }
+});
+
+app.get("/logout", (req, res) => {
+    req.session.destroy(() => res.redirect("/login.html"));
 });
 
 const PORT = process.env.PORT || 3000;
