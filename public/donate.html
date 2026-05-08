@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Donate</title>
+    <title>Donate Blood</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="container d-flex justify-content-center align-items-center" style="height:100vh;">
 
-    <h2>Donate Blood</h2>
+<div class="card p-4 w-50">
 
-    <div id="msg" class="alert alert-success d-none">Donor Added</div>
+    <h3 class="text-center">❤️ Donate Blood</h3>
 
-    <form id="form">
+    <div id="msg" class="alert alert-success d-none">Donor Added!</div>
+
+    <form id="donorForm">
 
         <input class="form-control mb-2" name="name" placeholder="Name" required>
 
@@ -32,8 +36,10 @@
 
 </div>
 
+</div>
+
 <script>
-const form = document.getElementById("form");
+const form = document.getElementById("donorForm");
 const msg = document.getElementById("msg");
 
 form.addEventListener("submit", async (e) => {
@@ -43,13 +49,13 @@ form.addEventListener("submit", async (e) => {
 
     const res = await fetch("/add-donor", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
     });
 
     const result = await res.json();
 
-    if (result.success) {
+    if(result.success){
         msg.classList.remove("d-none");
         form.reset();
 

@@ -25,12 +25,12 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("DB Connected ✔"))
 .catch(err => console.log(err));
 
-/* ---------------- LOGIN (FIXED) ---------------- */
+/* ---------------- LOGIN ---------------- */
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ name: username });
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -43,7 +43,7 @@ app.post("/login", async (req, res) => {
     res.json({
       success: true,
       role: user.role,
-      username: user.username
+      username: user.name
     });
 
   } catch (err) {
@@ -52,18 +52,26 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ---------------- ADD DONOR ---------------- */
-app.post("/add-donor", async (req, res) => {
+/* ---------------- SIGNUP ---------------- */
+app.post("/signup", async (req, res) => {
   try {
-    await Donor.create(req.body);
+    const exist = await User.findOne({ name: req.body.name });
+
+    if (exist) {
+      return res.json({ success: false, message: "User exists" });
+    }
+
+    await User.create(req.body);
+
     res.json({ success: true });
+
   } catch (err) {
     console.log(err);
     res.json({ success: false });
   }
 });
 
-/* ---------------- GET DONORS ---------------- */
+/* ---------------- DONORS ---------------- */
 app.get("/donors", async (req, res) => {
   try {
     const donors = await Donor.find();
@@ -74,7 +82,7 @@ app.get("/donors", async (req, res) => {
   }
 });
 
-/* ---------------- GET REQUESTS ---------------- */
+/* ---------------- REQUESTS ---------------- */
 app.get("/requests", async (req, res) => {
   try {
     const requests = await Request.find();
@@ -89,5 +97,5 @@ app.get("/requests", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("Server running ✔ on port", PORT);
 });
