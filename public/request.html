@@ -1,41 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Request Blood | Patient</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emergency Request | Patient</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="page-with-bg d-flex justify-content-center align-items-center" style="height:100vh;">
+<body class="d-flex justify-content-center align-items-center" style="min-height:100vh; background: #0f172a;">
 
-<div class="table-container col-md-5 p-4 shadow-lg" style="border-radius: 20px;">
-    <h3 class="text-center mb-4">🩸 Request Blood</h3>
-    <div id="successMsg" class="alert alert-success text-center" style="display:none;">✅ Request submitted successfully!</div>
+<div class="card-box" style="width: 100%; max-width: 500px;">
+    <h3 class="text-center mb-4" style="color: white;">🩸 Emergency Request</h3>
+    <div id="successMsg" class="alert alert-success d-none">✅ Request submitted successfully!</div>
+
     <form id="requestForm">
-        <input type="text" name="name" class="form-control mb-3" placeholder="Patient Name" required>
-        <select name="bloodGroup" class="form-select mb-3" required>
-            <option value="">Select Blood Group</option>
-            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-            <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+        <input type="text" name="name" placeholder="Patient Name" required>
+        
+        <select name="bloodGroup" required>
+            <option value="" disabled selected>Blood Group Required</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>O+</option><option>O-</option>
+            <option>AB+</option><option>AB-</option>
         </select>
-        <input type="text" name="city" class="form-control mb-3" placeholder="City" required>
-        <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">Submit Request</button>
+
+        <input type="text" name="city" placeholder="Hospital City" required>
+        <input type="text" name="phone" placeholder="Contact Number" required>
+
+        <button type="submit" class="btn-red">Submit Emergency Request</button>
     </form>
+    <div class="text-center mt-3">
+        <a href="index.html" style="color: #cbd5e1; text-decoration: none; font-size: 14px;">← Back to Home</a>
+    </div>
 </div>
 
 <script>
-    document.getElementById("requestForm").addEventListener("submit", function(e){
+    document.getElementById("requestForm").addEventListener("submit", async function(e){
         e.preventDefault();
         const data = Object.fromEntries(new FormData(this));
-        fetch('/add-request', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(() => {
-            document.getElementById("successMsg").style.display = "block";
+        
+        try {
+            await fetch('/add-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            document.getElementById("successMsg").classList.remove("d-none");
             this.reset();
-            setTimeout(() => { document.getElementById("successMsg").style.display = "none"; }, 3000);
-        });
+            setTimeout(() => { document.getElementById("successMsg").classList.add("d-none"); }, 3000);
+        } catch(err) { alert("Failed to submit request"); }
     });
 </script>
 </body>
