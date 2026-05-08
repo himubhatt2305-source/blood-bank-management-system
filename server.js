@@ -3,19 +3,19 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo"); // Fixed Import Style
+const MongoStore = require("connect-mongo"); // Standard import for v4+
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// 1. Database Connection - Fixed for Render
+// 1. Database Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("DB Connected ✔"))
     .catch(err => console.log("DB Connection Error:", err));
 
-// 2. Session Setup - Updated for current connect-mongo version
+// 2. Session Setup - Updated to fix the .create error
 app.set("trust proxy", 1);
 app.use(session({
     secret: "bloodbank_secret_key",
@@ -23,10 +23,10 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({ 
         mongoUrl: process.env.MONGO_URI,
-        collectionName: 'sessions'
+        collectionName: 'sessions' // Explicitly define session collection
     }),
     cookie: { 
-        secure: true, 
+        secure: true, // Required for HTTPS on Render
         sameSite: 'none',
         maxAge: 1000 * 60 * 60 * 24 
     }
@@ -36,7 +36,7 @@ app.use(session({
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     try {
-        // Direct Query for spaced field name from your database screenshot
+        // Direct Query to handle the "Email Address" field name in your database
         const user = await mongoose.connection.db.collection("users").findOne({ 
             "Email Address": username, 
             "password": password 
@@ -75,7 +75,10 @@ app.get("/donors-count", async (req, res) => {
 
 app.post("/add-donor", async (req, res) => {
     try {
-        await mongoose.connection.db.collection("donors").insertOne({...req.body, createdAt: new Date()});
+        await mongoose.connection.db.collection("donors").insertOne({
+            ...req.body, 
+            createdAt: new Date() 
+        });
         res.json({ success: true });
     } catch (err) { res.json({ success: false }); }
 });
@@ -103,4 +106,4 @@ app.get("/logout", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server Live on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server Live`));
