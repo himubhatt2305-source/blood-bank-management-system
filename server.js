@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo"); // Fixed Import
 const { ObjectId } = require("mongodb");
 
 const app = express();
@@ -36,7 +36,7 @@ app.post("/login", async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-/* --- DONORS (Edit/Delete/List) --- */
+/* --- DONORS --- */
 app.get("/donors-list", async (req, res) => {
     const data = await mongoose.connection.db.collection("donors").find({}).toArray();
     res.json(data);
@@ -56,7 +56,7 @@ app.delete("/delete-donor/:id", async (req, res) => {
     } catch (err) { res.json({ success: false }); }
 });
 
-/* --- REQUESTS (Status Update) --- */
+/* --- REQUESTS --- */
 app.get("/requests-data", async (req, res) => {
     const data = await mongoose.connection.db.collection("requests").find({}).toArray();
     res.json(data);
@@ -80,19 +80,21 @@ app.post("/update-request-status/:id", async (req, res) => {
     } catch (err) { res.json({ success: false }); }
 });
 
-/* --- DASHBOARD STATS --- */
+/* --- STATS --- */
 app.get("/dashboard-stats", async (req, res) => {
-    const d = await mongoose.connection.db.collection("donors").find({}).toArray();
-    res.json({
-        total: d.length,
-        Apos: d.filter(x => x.bloodGroup === "A+").length,
-        Bpos: d.filter(x => x.bloodGroup === "B+").length,
-        Opos: d.filter(x => x.bloodGroup === "O+").length,
-        ABpos: d.filter(x => x.bloodGroup === "AB+").length
-    });
+    try {
+        const d = await mongoose.connection.db.collection("donors").find({}).toArray();
+        res.json({
+            total: d.length,
+            Apos: d.filter(x => x.bloodGroup === "A+").length,
+            Bpos: d.filter(x => x.bloodGroup === "B+").length,
+            Opos: d.filter(x => x.bloodGroup === "O+").length,
+            ABpos: d.filter(x => x.bloodGroup === "AB+").length
+        });
+    } catch (err) { res.json({ total: 0, Apos: 0, Bpos: 0, Opos: 0, ABpos: 0 }); }
 });
 
 app.get("/logout", (req, res) => req.session.destroy(() => res.redirect("/login.html")));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server Live`));
+app.listen(PORT, () => console.log(`Server Live on ${PORT}`));
