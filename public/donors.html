@@ -1,55 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Admin | Donor Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin | Donor Management</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-    <div class="sidebar">
-        <h4 class="mb-5 text-danger">ADMIN CELL</h4>
-        <a href="donors.html">✓ Manage Donors</a>
-        <a href="requests.html">✓ Blood Requests</a>
-        <a href="/logout">Logout</a>
-    </div>
 
-    <div class="content">
-        <div class="glass-card">
-            <h3 class="mb-4">Donor Inventory</h3>
-            <table class="table table-dark table-hover mt-4">
-                <thead>
-                    <tr><th>Name</th><th>Group</th><th>Phone</th><th>City</th><th>Action</th></tr>
-                </thead>
-                <tbody id="list"></tbody>
-            </table>
+<div class="sidebar">
+
+    <h4 class="text-danger fw-bold">
+        🩸 ADMIN CELL
+    </h4>
+
+    <a href="donors.html">
+        Manage Donors
+    </a>
+
+    <a href="requests.html">
+        Blood Requests
+    </a>
+
+    <a href="/logout">
+        Logout
+    </a>
+
+</div>
+
+<div class="content">
+
+    <div class="glass-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+            <div>
+
+                <h2 class="fw-bold">
+                    Registered Blood Donors
+                </h2>
+
+                <p class="text-secondary mb-0">
+                    Live donor database management system
+                </p>
+
+            </div>
+
+            <div class="badge bg-danger fs-6 px-3 py-2">
+                Live Inventory
+            </div>
+
         </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-dark table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Blood Group</th>
+
+                        <th>Phone</th>
+
+                        <th>City</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="list"></tbody>
+
+            </table>
+
+        </div>
+
     </div>
 
-    <script>
-        async function getDonors() {
-            const res = await fetch('/donors-list');
-            const data = await res.json();
-            const tableBody = document.getElementById('list');
-            tableBody.innerHTML = data.map(d => `
-                <tr>
-                    <td>${d.name || d.Name || 'Donor'}</td>
-                    <td><span class="badge bg-danger">${d.bloodGroup}</span></td>
-                    <td>${d.phone}</td>
-                    <td>${d.city}</td>
-                    <td><button onclick="deleteDonor('${d._id}')" class="btn btn-sm btn-danger">Delete</button></td>
-                </tr>
-            `).join('');
+</div>
+
+<script>
+
+async function getDonors() {
+
+    const res = await fetch('/donors-list?t=' + Date.now());
+
+    const data = await res.json();
+
+    const tableBody = document.getElementById('list');
+
+    if(data.length === 0){
+
+        tableBody.innerHTML = `
+
+        <tr>
+
+            <td colspan="5" class="text-center text-secondary py-5">
+
+                No Donors Registered Yet
+
+            </td>
+
+        </tr>
+
+        `;
+
+        return;
+    }
+
+    tableBody.innerHTML = data.map(d => `
+
+        <tr>
+
+            <td>
+
+                ${d.name || "Unknown"}
+
+            </td>
+
+            <td>
+
+                <span class="badge bg-danger">
+
+                    ${d.bloodGroup || "N/A"}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                ${d.phone || "N/A"}
+
+            </td>
+
+            <td>
+
+                ${d.city || "Unknown"}
+
+            </td>
+
+            <td>
+
+                <button
+                onclick="deleteDonor('${d._id}')"
+                class="btn btn-danger btn-sm">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+    `).join("");
+
+}
+
+async function deleteDonor(id){
+
+    const confirmDelete = confirm(
+        "Delete this donor permanently?"
+    );
+
+    if(!confirmDelete) return;
+
+    const response = await fetch(
+
+        `/delete-donor/${id}`,
+
+        {
+            method: "DELETE"
         }
 
-        async function deleteDonor(id) {
-            if(confirm("Confirm removal from database?")) {
-                const response = await fetch(`/delete-donor/${id}`, { method: 'DELETE' });
-                const result = await response.json();
-                if(result.success) { alert("Donor Deleted"); location.reload(); }
-            }
-        }
-        window.onload = getDonors;
-    </script>
+    );
+
+    const result = await response.json();
+
+    if(result.success){
+
+        alert("Donor Deleted Successfully");
+
+        getDonors();
+
+    } else {
+
+        alert("Delete Failed");
+
+    }
+
+}
+
+window.onload = getDonors;
+
+</script>
+
 </body>
 </html>
