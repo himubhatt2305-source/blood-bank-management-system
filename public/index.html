@@ -3,153 +3,238 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Lifeline Blood Bank</title>
+    <title>Lifeline Blood Bank</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="description"
+        content="Lifeline Blood Bank Management System helps manage donors, emergency blood requests and blood inventory in real-time.">
 
-<link rel="stylesheet" href="style.css">
+    <meta name="keywords" content="blood bank, donor management, blood donation, emergency blood request">
+
+    <meta name="author" content="Himanshu">
+
+    <meta name="theme-color" content="#ef4444">
+
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-<nav class="navbar-custom">
+    <nav class="navbar-custom">
 
-    <div class="logo">
-        🩸 Lifeline
-    </div>
+        <div class="logo">
+            🩸 Lifeline
+        </div>
 
-    <div class="nav-links">
+        <div class="nav-links">
 
-        <a href="index.html">
-            Home
-        </a>
+            <a href="index.html">
+                Home
+            </a>
 
-        <a href="donate.html">
-            Donate
-        </a>
+            <a href="donate.html">
+                Donate
+            </a>
 
-        <a href="request.html">
-            Request Blood
-        </a>
+            <a href="request.html">
+                Request Blood
+            </a>
 
-        <a href="login.html" class="btn-red">
-            Admin Login
-        </a>
+            <a href="login.html" class="btn-red">
+                Admin Login
+            </a>
 
-    </div>
+        </div>
 
-</nav>
+    </nav>
 
-<div class="container hero-section">
+    <main>
 
-    <div class="row align-items-center">
 
-        <div class="col-lg-6">
+        <div class="container hero-section">
+            <div class="row align-items-center">
 
-            <h1 class="hero-title">
+                <div class="col-lg-6">
 
-                Donate Blood.
-                <br>
+                    <h1 class="hero-title">
 
-                Save <span>Lives.</span>
+                        Donate Blood.
+                        <br>
 
-            </h1>
+                        Save <span>Lives.</span>
 
-            <p class="hero-sub">
+                    </h1>
 
-                Modern blood bank management system with real-time donor tracking,
-                emergency blood requests, smart inventory management and
-                futuristic healthcare technology.
+                    <p class="hero-sub">
 
-            </p>
+                        Modern blood bank management system with real-time donor tracking,
+                        emergency blood requests, smart inventory management and
+                        futuristic healthcare technology.
 
-            <div class="d-flex gap-3 mt-4 flex-wrap">
+                    </p>
 
-                <a href="donate.html" class="btn-red">
+                    <div class="d-flex gap-3 mt-4 flex-wrap">
 
-                    Become Donor
+                        <a href="donate.html" class="btn-red">
 
-                </a>
+                            Become Donor
 
-                <a href="request.html" class="btn-dark-glass">
+                        </a>
 
-                    Emergency Request
+                        <a href="request.html" class="btn-dark-glass">
 
-                </a>
+                            Emergency Request
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 mt-5 mt-lg-0">
+
+                    <div class="glass-card">
+
+                        <div class="row g-4">
+
+                            <div class="col-6">
+
+                                <div class="stats-card red">
+
+                                    <h2 id="total-d">
+                                        0
+                                    </h2>
+
+                                    <p>
+                                        Total Donors
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="stats-card blue">
+
+                                    <h2 id="a-c">
+                                        0
+                                    </h2>
+
+                                    <p>
+                                        A+ Units
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="stats-card green">
+
+                                    <h2 id="b-c">
+                                        0
+                                    </h2>
+
+                                    <p>
+                                        B+ Units
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="stats-card purple">
+
+                                    <h2 id="o-c">
+                                        0
+                                    </h2>
+
+                                    <p>
+                                        O+ Units
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-        <div class="col-lg-6 mt-5 mt-lg-0">
+        <div class="container pb-5">
 
-            <div class="glass-card">
+            <div class="glass-card text-center">
+
+                <h2 class="mb-4">
+
+                    Why Choose Lifeline?
+
+                </h2>
 
                 <div class="row g-4">
 
-                    <div class="col-6">
+                    <div class="col-md-4">
 
-                        <div class="stats-card red">
+                        <div class="glass-card h-100">
 
-                            <h2 id="total-d">
-                                0
-                            </h2>
+                            <h3>
+                                ⚡ Fast Access
+                            </h3>
 
-                            <p>
-                                Total Donors
+                            <p class="text-secondary mt-3">
+
+                                Real-time emergency blood request system with instant response.
+
                             </p>
 
                         </div>
 
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-md-4">
 
-                        <div class="stats-card blue">
+                        <div class="glass-card h-100">
 
-                            <h2 id="a-c">
-                                0
-                            </h2>
+                            <h3>
+                                🔒 Secure Database
+                            </h3>
 
-                            <p>
-                                A+ Units
+                            <p class="text-secondary mt-3">
+
+                                Modern MongoDB powered blood donor management platform.
+
                             </p>
 
                         </div>
 
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-md-4">
 
-                        <div class="stats-card green">
+                        <div class="glass-card h-100">
 
-                            <h2 id="b-c">
-                                0
-                            </h2>
+                            <h3>
+                                🌍 Smart Tracking
+                            </h3>
 
-                            <p>
-                                B+ Units
-                            </p>
+                            <p class="text-secondary mt-3">
 
-                        </div>
+                                Manage donors, requests and blood inventory efficiently.
 
-                    </div>
-
-                    <div class="col-6">
-
-                        <div class="stats-card purple">
-
-                            <h2 id="o-c">
-                                0
-                            </h2>
-
-                            <p>
-                                O+ Units
                             </p>
 
                         </div>
@@ -162,107 +247,31 @@
 
         </div>
 
-    </div>
+        <script>
 
-</div>
+            async function loadStats() {
 
-<div class="container pb-5">
+                const res = await fetch('/dashboard-stats?t=' + Date.now());
+                const data = await res.json();
 
-    <div class="glass-card text-center">
+                document.getElementById('total-d').innerText =
+                    data.total || 0;
 
-        <h2 class="mb-4">
+                document.getElementById('a-c').innerText =
+                    data.Apos || 0;
 
-            Why Choose Lifeline?
+                document.getElementById('b-c').innerText =
+                    data.Bpos || 0;
 
-        </h2>
+                document.getElementById('o-c').innerText =
+                    data.Opos || 0;
 
-        <div class="row g-4">
+            }
 
-            <div class="col-md-4">
+            window.onload = loadStats;
 
-                <div class="glass-card h-100">
-
-                    <h3>
-                        ⚡ Fast Access
-                    </h3>
-
-                    <p class="text-secondary mt-3">
-
-                        Real-time emergency blood request system with instant response.
-
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="glass-card h-100">
-
-                    <h3>
-                        🔒 Secure Database
-                    </h3>
-
-                    <p class="text-secondary mt-3">
-
-                        Modern MongoDB powered blood donor management platform.
-
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="glass-card h-100">
-
-                    <h3>
-                        🌍 Smart Tracking
-                    </h3>
-
-                    <p class="text-secondary mt-3">
-
-                        Manage donors, requests and blood inventory efficiently.
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-async function loadStats(){
-
-    const res = await fetch('/dashboard-stats');
-
-    const data = await res.json();
-
-    document.getElementById('total-d').innerText =
-    data.total || 0;
-
-    document.getElementById('a-c').innerText =
-    data.Apos || 0;
-
-    document.getElementById('b-c').innerText =
-    data.Bpos || 0;
-
-    document.getElementById('o-c').innerText =
-    data.Opos || 0;
-
-}
-
-window.onload = loadStats;
-
-</script>
-
+        </script>
+    </main>
 </body>
+
 </html>

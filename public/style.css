@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 *{
     margin:0;
@@ -128,8 +128,8 @@ body::after{
 /* Buttons */
 
 .btn-red{
-    background:#ef4444;
-    color:white;
+    background:#dc2626;
+    color:#ffffff;
     border:none;
     padding:14px 28px;
     border-radius:14px;
@@ -141,7 +141,7 @@ body::after{
 
 .btn-red:hover{
     transform:translateY(-3px);
-    background:#dc2626;
+    background:#b91c1c;
     box-shadow:0 10px 30px rgba(239,68,68,0.4);
 }
 
@@ -154,11 +154,13 @@ body::after{
     text-decoration:none;
     font-weight:600;
     transition:.3s;
+    display:inline-block;
 }
 
 .btn-dark-glass:hover{
     background:rgba(255,255,255,0.15);
     transform:translateY(-3px);
+    color:white;
 }
 
 /* Glass Cards */
@@ -217,16 +219,21 @@ body::after{
 /* Forms */
 
 .form-control,
-.form-select{
-    background:rgba(255,255,255,0.08)!important;
-    border:1px solid rgba(255,255,255,0.12)!important;
-    color:white!important;
-    border-radius:14px!important;
-    padding:14px!important;
+.form-select,
+input,
+select{
+    width:100%;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+    color:white;
+    border-radius:14px;
+    padding:14px;
     margin-bottom:18px;
+    outline:none;
 }
 
-.form-control::placeholder{
+.form-control::placeholder,
+input::placeholder{
     color:#94a3b8;
 }
 
@@ -235,7 +242,7 @@ body::after{
     margin-bottom:8px;
 }
 
-.form-select option{
+select option{
     color:black;
 }
 
@@ -349,6 +356,7 @@ body::after{
     border-radius:10px;
     font-weight:600;
     transition:.3s;
+    cursor:pointer;
 }
 
 .accept-btn{
@@ -368,6 +376,60 @@ body::after{
 
 .action-btn:hover{
     transform:scale(1.06);
+}
+
+/* Utility */
+
+.text-center{
+    text-align:center;
+}
+
+.mt-3{
+    margin-top:1rem;
+}
+
+.mt-4{
+    margin-top:1.5rem;
+}
+
+.mt-5{
+    margin-top:3rem;
+}
+
+.mb-4{
+    margin-bottom:1.5rem;
+}
+
+.pb-5{
+    padding-bottom:3rem;
+}
+
+.d-flex{
+    display:flex;
+}
+
+.gap-2{
+    gap:10px;
+}
+
+.gap-3{
+    gap:15px;
+}
+
+.flex-wrap{
+    flex-wrap:wrap;
+}
+
+.justify-content-between{
+    justify-content:space-between;
+}
+
+.align-items-center{
+    align-items:center;
+}
+
+.table-responsive{
+    overflow-x:auto;
 }
 
 /* Mobile */
@@ -397,5 +459,13 @@ body::after{
 
     .hero-title{
         font-size:42px;
+    }
+
+    .glass-card{
+        padding:20px;
+    }
+
+    .stats-card h2{
+        font-size:28px;
     }
 }
