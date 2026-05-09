@@ -522,3 +522,281 @@ body{
     }
 
 }
+/* ADMIN UI */
+
+.admin-layout{
+
+    display:flex;
+
+    min-height:100vh;
+
+}
+
+.sidebar{
+
+    width:260px;
+
+    background:rgba(15,23,42,0.88);
+
+    backdrop-filter:blur(20px);
+
+    border-right:1px solid rgba(255,255,255,0.08);
+
+    padding:30px 20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+.sidebar-logo{
+
+    color:#ef4444;
+
+    margin-bottom:40px;
+
+}
+
+.sidebar-links{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+.sidebar-links a{
+
+    text-decoration:none;
+
+    color:#e2e8f0;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    transition:.3s;
+
+    font-weight:600;
+
+}
+
+.sidebar-links a:hover,
+.active-link{
+
+    background:#ef4444;
+
+    color:white !important;
+
+}
+
+.logout-btn{
+
+    text-decoration:none;
+
+    background:#991b1b;
+
+    color:white;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    text-align:center;
+
+    font-weight:700;
+
+}
+
+.admin-main{
+
+    flex:1;
+
+    padding:40px;
+
+}
+
+.page-top h1{
+
+    font-size:42px;
+
+    margin-bottom:10px;
+
+}
+
+.page-top p{
+
+    color:#cbd5e1;
+
+    margin-bottom:30px;
+
+}
+
+.table-glass{
+
+    background:rgba(255,255,255,0.06);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(16px);
+
+    border-radius:24px;
+
+    overflow:auto;
+
+    padding:20px;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+th{
+
+    background:rgba(255,255,255,0.08);
+
+    padding:18px;
+
+    text-align:left;
+
+    color:#f8fafc;
+
+}
+
+td{
+
+    padding:18px;
+
+    border-bottom:1px solid rgba(255,255,255,0.06);
+
+    color:#e2e8f0;
+
+}
+
+tr:hover{
+
+    background:rgba(255,255,255,0.03);
+
+}
+
+.blood-badge{
+
+    background:#ef4444;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-weight:700;
+
+}
+
+.delete-btn,
+.approve-btn,
+.reject-btn{
+
+    border:none;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+}
+
+.delete-btn{
+
+    background:#dc2626;
+
+}
+
+.approve-btn{
+
+    background:#16a34a;
+
+}
+
+.reject-btn{
+
+    background:#dc2626;
+
+}
+
+.action-flex{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.status-badge{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-weight:700;
+
+}
+
+.accepted{
+
+    background:#16a34a;
+
+}
+
+.rejected{
+
+    background:#dc2626;
+
+}
+
+.pending{
+
+    background:#eab308;
+
+    color:black;
+
+}
+
+@media(max-width:900px){
+
+    .admin-layout{
+
+        flex-direction:column;
+
+    }
+
+    .sidebar{
+
+        width:100%;
+
+        border-right:none;
+
+        border-bottom:1px solid rgba(255,255,255,0.08);
+
+    }
+
+    .admin-main{
+
+        padding:20px;
+
+    }
+
+}

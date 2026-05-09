@@ -15,64 +15,62 @@
 
 <body>
 
-<div class="sidebar">
+<div class="admin-layout">
 
-    <h4>
-        🩸
-    </h4>
+    <aside class="sidebar">
 
-    <a href="donors.html">
-        Manage Donors
-    </a>
+        <div>
 
-    <a href="requests.html">
-        Blood Requests
-    </a>
+            <h2 class="sidebar-logo">
+                🩸 ADMIN
+            </h2>
 
-    <a href="/logout">
-        Logout
-    </a>
+            <div class="sidebar-links">
 
-</div>
+                <a href="donors.html" class="active-link">
+                    Donors
+                </a>
 
-<div class="content">
-
-    <div class="glass-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-
-            <div>
-
-                <h2>
-                    Registered Donors
-                </h2>
-
-                <p class="text-secondary">
-
-                    Real-time blood donor inventory management
-
-                </p>
+                <a href="requests.html">
+                    Requests
+                </a>
 
             </div>
 
         </div>
 
-        <div class="table-responsive">
+        <a href="/logout" class="logout-btn">
+            Logout
+        </a>
 
-            <table class="table-custom">
+    </aside>
+
+    <main class="admin-main">
+
+        <div class="page-top">
+
+            <h1>
+                Donor Inventory
+            </h1>
+
+            <p>
+                Manage all registered blood donors
+            </p>
+
+        </div>
+
+        <div class="table-glass">
+
+            <table>
 
                 <thead>
 
                     <tr>
 
                         <th>Name</th>
-
                         <th>Blood Group</th>
-
                         <th>Phone</th>
-
                         <th>City</th>
-
                         <th>Action</th>
 
                     </tr>
@@ -85,7 +83,7 @@
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
@@ -93,70 +91,64 @@
 
 async function getDonors(){
 
-    const res =
-    await fetch('/donors-list?t=' + Date.now());
+    try{
 
-    const data = await res.json();
+        const res =
+        await fetch('/donors-list');
 
-    const table =
-    document.getElementById("list");
+        const data =
+        await res.json();
 
-    if(data.length === 0){
+        const table =
+        document.getElementById('list');
 
-        table.innerHTML = `
+        if(!data.length){
 
-        <tr>
+            table.innerHTML =
+            `
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;">
+                    No donors found
+                </td>
+            </tr>
+            `;
 
-            <td colspan="5">
+            return;
 
-                No Donors Found
+        }
 
-            </td>
-
-        </tr>
-
-        `;
-
-        return;
-    }
-
-    table.innerHTML = data.map(d => `
+        table.innerHTML =
+        data.map(d => `
 
         <tr>
 
             <td>
-
-                ${d.name || "Unknown"}
-
+                ${d.name || 'Unknown'}
             </td>
 
             <td>
 
-                <span class="badge-red">
+                <span class="blood-badge">
 
-                    ${d.bloodGroup || "N/A"}
+                    ${d.bloodGroup || 'N/A'}
 
                 </span>
 
             </td>
 
             <td>
-
-                ${d.phone || "N/A"}
-
+                ${d.phone || '-'}
             </td>
 
             <td>
-
-                ${d.city || "Unknown"}
-
+                ${d.city || '-'}
             </td>
 
             <td>
 
                 <button
-                onclick="deleteDonor('${d._id}')"
-                class="action-btn delete-btn">
+                class="delete-btn"
+                onclick="deleteDonor('${d._id}')">
 
                     Delete
 
@@ -166,36 +158,52 @@ async function getDonors(){
 
         </tr>
 
-    `).join("");
+        `).join('');
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+    }
 
 }
 
 async function deleteDonor(id){
 
-    const confirmDelete =
+    const ok =
     confirm("Delete donor permanently?");
 
-    if(!confirmDelete) return;
+    if(!ok) return;
 
-    const res = await fetch(
+    try{
 
-        `/delete-donor/${id}`,
+        const res =
+        await fetch(`/delete-donor/${id}`,{
+            method:'DELETE'
+        });
 
-        {
-            method:"DELETE"
+        const data =
+        await res.json();
+
+        if(data.success){
+
+            getDonors();
+
         }
 
-    );
+        else{
 
-    const result = await res.json();
+            alert("Delete failed");
 
-    if(result.success){
+        }
 
-        getDonors();
+    }
 
-    } else {
+    catch(err){
 
-        alert("Delete Failed");
+        alert("Server error");
 
     }
 

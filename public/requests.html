@@ -15,66 +15,62 @@
 
 <body>
 
-<div class="sidebar">
+<div class="admin-layout">
 
-    <h4>
-        🩸
-    </h4>
+    <aside class="sidebar">
 
-    <a href="donors.html">
-        Manage Donors
-    </a>
+        <div>
 
-    <a href="requests.html">
-        Blood Requests
-    </a>
+            <h2 class="sidebar-logo">
+                🩸 ADMIN
+            </h2>
 
-    <a href="/logout">
-        Logout
-    </a>
+            <div class="sidebar-links">
 
-</div>
+                <a href="donors.html">
+                    Donors
+                </a>
 
-<div class="content">
-
-    <div class="glass-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-
-            <div>
-
-                <h2>
-                    Emergency Requests
-                </h2>
-
-                <p class="text-secondary">
-
-                    Live patient blood request queue
-
-                </p>
+                <a href="requests.html" class="active-link">
+                    Requests
+                </a>
 
             </div>
 
         </div>
 
-        <div class="table-responsive">
+        <a href="/logout" class="logout-btn">
+            Logout
+        </a>
 
-            <table class="table-custom">
+    </aside>
+
+    <main class="admin-main">
+
+        <div class="page-top">
+
+            <h1>
+                Emergency Requests
+            </h1>
+
+            <p>
+                Approve or reject blood requests
+            </p>
+
+        </div>
+
+        <div class="table-glass">
+
+            <table>
 
                 <thead>
 
                     <tr>
 
                         <th>Patient</th>
-
                         <th>Blood</th>
-
                         <th>City</th>
-
-                        <th>Phone</th>
-
                         <th>Status</th>
-
                         <th>Actions</th>
 
                     </tr>
@@ -87,7 +83,7 @@
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
@@ -95,156 +91,142 @@
 
 async function loadRequests(){
 
-    const res =
-    await fetch('/requests-data?t=' + Date.now());
+    try{
 
-    const data = await res.json();
+        const res =
+        await fetch('/requests-data');
 
-    const table =
-    document.getElementById("requestTable");
+        const data =
+        await res.json();
 
-    if(data.length === 0){
+        const table =
+        document.getElementById('requestTable');
 
-        table.innerHTML = `
+        if(!data.length){
 
-        <tr>
+            table.innerHTML =
+            `
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;">
+                    No requests found
+                </td>
+            </tr>
+            `;
 
-            <td colspan="6">
+            return;
 
-                No Requests Found
+        }
 
-            </td>
-
-        </tr>
-
-        `;
-
-        return;
-    }
-
-    table.innerHTML = data.map(r => `
+        table.innerHTML =
+        data.map(r => `
 
         <tr>
 
             <td>
-
-                ${r.patientName || r.name || "Emergency"}
-
+                ${r.name || 'Unknown'}
             </td>
 
             <td>
 
-                <span class="badge-red">
+                <span class="blood-badge">
 
-                    ${r.bloodGroup || "N/A"}
+                    ${r.bloodGroup || 'N/A'}
 
                 </span>
 
             </td>
 
             <td>
-
-                ${r.city || "Unknown"}
-
+                ${r.city || '-'}
             </td>
 
             <td>
 
-                ${r.phone || "N/A"}
+                <span class="
+                status-badge
+                ${r.status === 'Accepted'
+                ? 'accepted'
+                : r.status === 'Rejected'
+                ? 'rejected'
+                : 'pending'}">
+
+                ${r.status || 'Pending'}
+
+                </span>
 
             </td>
 
-            <td>
+            <td class="action-flex">
 
-                ${
-                    r.status === "Accepted"
+                <button
+                class="approve-btn"
+                onclick="updateStatus('${r._id}','Accepted')">
 
-                    ?
+                    Accept
 
-                    `<span class="badge-green">
-                        Accepted
-                    </span>`
+                </button>
 
-                    :
+                <button
+                class="reject-btn"
+                onclick="updateStatus('${r._id}','Rejected')">
 
-                    r.status === "Rejected"
+                    Reject
 
-                    ?
-
-                    `<span class="badge-red">
-                        Rejected
-                    </span>`
-
-                    :
-
-                    `<span class="badge-yellow">
-                        Pending
-                    </span>`
-                }
-
-            </td>
-
-            <td>
-
-                <div class="d-flex gap-2 flex-wrap">
-
-                    <button
-                    onclick="updateStatus('${r._id}','Accepted')"
-                    class="action-btn accept-btn">
-
-                        Accept
-
-                    </button>
-
-                    <button
-                    onclick="updateStatus('${r._id}','Rejected')"
-                    class="action-btn reject-btn">
-
-                        Reject
-
-                    </button>
-
-                </div>
+                </button>
 
             </td>
 
         </tr>
 
-    `).join("");
+        `).join('');
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+    }
 
 }
 
 async function updateStatus(id,status){
 
-    const res = await fetch(
+    try{
 
-        `/update-request-status/${id}`,
+        const res =
+        await fetch(`/update-request-status/${id}`,{
 
-        {
-
-            method:"POST",
+            method:'POST',
 
             headers:{
-                "Content-Type":"application/json"
+                'Content-Type':'application/json'
             },
 
-            body:JSON.stringify({
-                status
-            })
+            body:JSON.stringify({status})
+
+        });
+
+        const data =
+        await res.json();
+
+        if(data.success){
+
+            loadRequests();
 
         }
 
-    );
+        else{
 
-    const result = await res.json();
+            alert("Update failed");
 
-    if(result.success){
+        }
 
-        loadRequests();
+    }
 
-    } else {
+    catch(err){
 
-        alert("Update Failed");
+        alert("Server error");
 
     }
 
