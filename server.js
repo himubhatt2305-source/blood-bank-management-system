@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-const { ObjectId } = require("mongodb");
 
 const app = express();
 
@@ -24,8 +23,8 @@ app.use(express.static(
 /* ---------------- DATABASE ---------------- */
 
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("DB Connected ✔"))
-.catch(err => console.log(err));
+    .then(() => console.log("DB Connected ✔"))
+    .catch(err => console.log(err));
 
 /* ---------------- SESSION ---------------- */
 
@@ -50,6 +49,7 @@ app.use(session({
         sameSite: "none",
 
         maxAge: 1000 * 60 * 60 * 24
+
     }
 
 }));
@@ -73,13 +73,13 @@ app.post("/login", async (req, res) => {
     try {
 
         const user = await mongoose.connection.db
-        .collection("users")
-        .findOne({
+            .collection("users")
+            .findOne({
 
-            "Email Address": username,
-            password: password
+                "Email Address": username,
+                password: password
 
-        });
+            });
 
         if (!user) {
 
@@ -105,6 +105,8 @@ app.post("/login", async (req, res) => {
 
     } catch (err) {
 
+        console.log(err);
+
         res.json({
             success: false
         });
@@ -120,14 +122,16 @@ app.get("/donors-list", async (req, res) => {
     try {
 
         const data = await mongoose.connection.db
-        .collection("donors")
-        .find({})
-        .sort({ createdAt: -1 })
-        .toArray();
+            .collection("donors")
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
         res.json(data);
 
     } catch (err) {
+
+        console.log(err);
 
         res.json([]);
 
@@ -142,23 +146,29 @@ app.post("/add-donor", async (req, res) => {
     try {
 
         await mongoose.connection.db
-        .collection("donors")
-        .insertOne({
+            .collection("donors")
+            .insertOne({
 
-            ...req.body,
+                ...req.body,
 
-            createdAt: new Date()
+                createdAt: new Date()
 
-        });
+            });
 
         res.json({
+
             success: true
+
         });
 
     } catch (err) {
 
+        console.log(err);
+
         res.json({
+
             success: false
+
         });
 
     }
@@ -171,24 +181,30 @@ app.delete("/delete-donor/:id", async (req, res) => {
 
     try {
 
-        const donorId = new ObjectId(req.params.id);
+        const id = req.params.id;
 
         await mongoose.connection.db
-        .collection("donors")
-        .deleteOne({
+            .collection("donors")
+            .findOneAndDelete({
 
-            _id: donorId
+                _id: new mongoose.Types.ObjectId(id)
 
-        });
+            });
 
         res.json({
+
             success: true
+
         });
 
     } catch (err) {
 
+        console.log(err);
+
         res.json({
+
             success: false
+
         });
 
     }
@@ -202,14 +218,16 @@ app.get("/requests-data", async (req, res) => {
     try {
 
         const data = await mongoose.connection.db
-        .collection("requests")
-        .find({})
-        .sort({ createdAt: -1 })
-        .toArray();
+            .collection("requests")
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
         res.json(data);
 
     } catch (err) {
+
+        console.log(err);
 
         res.json([]);
 
@@ -224,25 +242,31 @@ app.post("/add-request", async (req, res) => {
     try {
 
         await mongoose.connection.db
-        .collection("requests")
-        .insertOne({
+            .collection("requests")
+            .insertOne({
 
-            ...req.body,
+                ...req.body,
 
-            status: "Pending",
+                status: "Pending",
 
-            createdAt: new Date()
+                createdAt: new Date()
 
-        });
+            });
 
         res.json({
+
             success: true
+
         });
 
     } catch (err) {
 
+        console.log(err);
+
         res.json({
+
             success: false
+
         });
 
     }
@@ -255,34 +279,46 @@ app.post("/update-request-status/:id", async (req, res) => {
 
     try {
 
-        const requestId = new ObjectId(req.params.id);
+        const id = req.params.id;
 
         const { status } = req.body;
 
         await mongoose.connection.db
-        .collection("requests")
-        .updateOne(
+            .collection("requests")
+            .updateOne(
 
-            {
-                _id: requestId
-            },
+                {
 
-            {
-                $set: {
-                    status: status
+                    _id: new mongoose.Types.ObjectId(id)
+
+                },
+
+                {
+
+                    $set: {
+
+                        status: status
+
+                    }
+
                 }
-            }
 
-        );
+            );
 
         res.json({
+
             success: true
+
         });
 
     } catch (err) {
 
+        console.log(err);
+
         res.json({
+
             success: false
+
         });
 
     }
@@ -296,9 +332,9 @@ app.get("/dashboard-stats", async (req, res) => {
     try {
 
         const donors = await mongoose.connection.db
-        .collection("donors")
-        .find({})
-        .toArray();
+            .collection("donors")
+            .find({})
+            .toArray();
 
         res.json({
 
@@ -323,6 +359,8 @@ app.get("/dashboard-stats", async (req, res) => {
         });
 
     } catch (err) {
+
+        console.log(err);
 
         res.json({
 

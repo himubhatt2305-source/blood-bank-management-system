@@ -1,54 +1,104 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Emergency Request</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Blood Request</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
-<body class="page-center">
+<body class="d-flex justify-content-center align-items-center"
+style="min-height:100vh; background:#0f172a;">
 
-<div class="glass-form">
+<div class="glass-card" style="width:100%; max-width:500px;">
 
-    <h2 class="title-red">🩸 Emergency Blood Request</h2>
-
-    <div id="successMsg" class="alert alert-success d-none">
-        Request Submitted Successfully
-    </div>
+    <h2 class="text-center mb-4 fw-bold">
+        🩸 Emergency Blood Request
+    </h2>
 
     <form id="requestForm">
 
-        <label>Patient Name</label>
-        <input type="text" name="patientName" required>
+        <label class="form-label">
+            Patient Name
+        </label>
 
-        <label>Blood Group</label>
+        <input
+        type="text"
+        name="patientName"
+        class="form-control"
+        placeholder="Enter Patient Name"
+        required>
 
-        <select name="bloodGroup" required>
-            <option value="">Select Group</option>
+        <label class="form-label">
+            Blood Group
+        </label>
+
+        <select
+        name="bloodGroup"
+        class="form-select"
+        required>
+
+            <option value="">
+                Select Blood Group
+            </option>
 
             <option>A+</option>
-            <option>B+</option>
-            <option>O+</option>
-            <option>AB+</option>
-
             <option>A-</option>
+            <option>B+</option>
             <option>B-</option>
+            <option>O+</option>
             <option>O-</option>
+            <option>AB+</option>
             <option>AB-</option>
+
         </select>
 
-        <label>Hospital City</label>
-        <input type="text" name="city" required>
+        <label class="form-label">
+            Hospital City
+        </label>
 
-        <label>Phone Number</label>
-        <input type="text" name="phone" required>
+        <input
+        type="text"
+        name="city"
+        class="form-control"
+        placeholder="Enter City"
+        required>
 
-        <button type="submit" class="btn-red">
-            Submit Request
+        <label class="form-label">
+            Contact Number
+        </label>
+
+        <input
+        type="text"
+        name="phone"
+        class="form-control"
+        placeholder="Enter Phone Number"
+        required>
+
+        <button
+        type="submit"
+        class="btn btn-danger w-100 py-3 mt-3"
+        id="submitBtn">
+
+            Submit Emergency Request
+
         </button>
+
+        <div class="text-center mt-3">
+
+            <a href="index.html" class="text-white-50">
+
+                ← Back to Home
+
+            </a>
+
+        </div>
 
     </form>
 
@@ -61,26 +111,46 @@ document.getElementById("requestForm")
 
     e.preventDefault();
 
-    const data = Object.fromEntries(
-        new FormData(this)
-    );
+    const btn =
+    document.getElementById("submitBtn");
 
-    await fetch('/add-request', {
+    btn.disabled = true;
 
-        method: 'POST',
+    btn.innerText = "Submitting...";
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+    const data =
+    Object.fromEntries(new FormData(this));
 
-        body: JSON.stringify(data)
+    try {
 
-    });
+        await fetch('/add-request', {
 
-    document.getElementById("successMsg")
-    .classList.remove("d-none");
+            method: 'POST',
 
-    this.reset();
+            headers: {
+
+                'Content-Type': 'application/json'
+
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+        alert("Request Submitted Successfully");
+
+        this.reset();
+
+    } catch(err) {
+
+        alert("Submission Failed");
+
+    }
+
+    btn.disabled = false;
+
+    btn.innerText =
+    "Submit Emergency Request";
 
 });
 
