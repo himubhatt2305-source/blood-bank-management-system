@@ -7,9 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin | Blood Requests</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Blood Requests</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -19,8 +17,8 @@
 
 <div class="sidebar">
 
-    <h4 class="text-danger fw-bold">
-        🩸 ADMIN CELL
+    <h4>
+        🩸
     </h4>
 
     <a href="donors.html">
@@ -45,25 +43,23 @@
 
             <div>
 
-                <h2 class="fw-bold">
-                    Emergency Blood Requests
+                <h2>
+                    Emergency Requests
                 </h2>
 
-                <p class="text-secondary mb-0">
-                    Real-time emergency request management
+                <p class="text-secondary">
+
+                    Live patient blood request queue
+
                 </p>
 
-            </div>
-
-            <div class="badge bg-danger fs-6 px-3 py-2">
-                Live Queue
             </div>
 
         </div>
 
         <div class="table-responsive">
 
-            <table class="table table-dark table-hover align-middle">
+            <table class="table-custom">
 
                 <thead>
 
@@ -71,7 +67,7 @@
 
                         <th>Patient</th>
 
-                        <th>Blood Group</th>
+                        <th>Blood</th>
 
                         <th>City</th>
 
@@ -99,15 +95,13 @@
 
 async function loadRequests(){
 
-    const res = await fetch(
-        '/requests-data?t=' + Date.now()
-    );
+    const res =
+    await fetch('/requests-data?t=' + Date.now());
 
     const data = await res.json();
 
-    const table = document.getElementById(
-        "requestTable"
-    );
+    const table =
+    document.getElementById("requestTable");
 
     if(data.length === 0){
 
@@ -115,9 +109,9 @@ async function loadRequests(){
 
         <tr>
 
-            <td colspan="6" class="text-center text-secondary py-5">
+            <td colspan="6">
 
-                No Emergency Requests Found
+                No Requests Found
 
             </td>
 
@@ -140,7 +134,7 @@ async function loadRequests(){
 
             <td>
 
-                <span class="badge bg-danger">
+                <span class="badge-red">
 
                     ${r.bloodGroup || "N/A"}
 
@@ -162,43 +156,55 @@ async function loadRequests(){
 
             <td>
 
-                <span class="badge ${
+                ${
                     r.status === "Accepted"
-                    ? "bg-success"
 
-                    : r.status === "Rejected"
-                    ? "bg-danger"
+                    ?
 
-                    : "bg-warning text-dark"
-                }">
+                    `<span class="badge-green">
+                        Accepted
+                    </span>`
 
-                    ${r.status || "Pending"}
+                    :
 
-                </span>
+                    r.status === "Rejected"
+
+                    ?
+
+                    `<span class="badge-red">
+                        Rejected
+                    </span>`
+
+                    :
+
+                    `<span class="badge-yellow">
+                        Pending
+                    </span>`
+                }
 
             </td>
 
-            <td class="d-flex gap-2 flex-wrap">
+            <td>
 
-                <button
+                <div class="d-flex gap-2 flex-wrap">
 
-                onclick="updateStatus('${r._id}','Accepted')"
+                    <button
+                    onclick="updateStatus('${r._id}','Accepted')"
+                    class="action-btn accept-btn">
 
-                class="btn btn-success btn-sm">
+                        Accept
 
-                    Accept
+                    </button>
 
-                </button>
+                    <button
+                    onclick="updateStatus('${r._id}','Rejected')"
+                    class="action-btn reject-btn">
 
-                <button
+                        Reject
 
-                onclick="updateStatus('${r._id}','Rejected')"
+                    </button>
 
-                class="btn btn-danger btn-sm">
-
-                    Reject
-
-                </button>
+                </div>
 
             </td>
 
@@ -208,33 +214,29 @@ async function loadRequests(){
 
 }
 
-async function updateStatus(id, status){
+async function updateStatus(id,status){
 
-    const response = await fetch(
+    const res = await fetch(
 
         `/update-request-status/${id}`,
 
         {
 
-            method: "POST",
+            method:"POST",
 
-            headers: {
-
-                "Content-Type": "application/json"
-
+            headers:{
+                "Content-Type":"application/json"
             },
 
-            body: JSON.stringify({
-
-                status: status
-
+            body:JSON.stringify({
+                status
             })
 
         }
 
     );
 
-    const result = await response.json();
+    const result = await res.json();
 
     if(result.success){
 
@@ -242,7 +244,7 @@ async function updateStatus(id, status){
 
     } else {
 
-        alert("Status Update Failed");
+        alert("Update Failed");
 
     }
 

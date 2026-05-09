@@ -1,59 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lifeline Blood Bank</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <nav class="navbar-custom">
-        <div class="logo"><h3>🩸 Lifeline</h3></div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="donate.html">Donate</a>
-            <a href="request.html">Request</a>
-            <a href="login.html" class="btn btn-sm btn-outline-danger">Admin Login</a>
-        </div>
-    </nav>
 
-    <div class="container mt-5">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-3 fw-bold">Life is <span class="text-danger">Shared.</span></h1>
-                <p class="lead text-secondary">Advanced Blood Bank Management System. Track donors, manage requests, and save lives in real-time.</p>
-                <div class="d-flex gap-3 mt-4">
-                    <a href="donate.html" class="btn btn-danger btn-lg px-4">Register as Donor</a>
-                    <a href="request.html" class="btn btn-outline-light btn-lg px-4">Blood Request</a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="glass-card">
-                    <div class="row g-3">
-                        <div class="col-12"><div class="p-4 rounded-3 bg-primary text-center">
-                            <h2 id="total-d">0</h2><p>Total Registered Donors</p>
-                        </div></div>
-                        <div class="col-6"><div class="p-3 rounded-3 bg-danger text-center"><h3 id="a-c">0</h3><p>A+ Units</p></div></div>
-                        <div class="col-6"><div class="p-3 rounded-3 bg-info text-center"><h3 id="b-c">0</h3><p>B+ Units</p></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-5 glass-card text-center">
-            <h3>Support & Inquiries</h3>
-            <p>Email: <span class="text-danger">himu.bhatt.2305@gmail.com</span></p>
-        </div>
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lifeline Blood Bank</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar-custom">
+
+    <div class="logo">
+        🩸 Lifeline
     </div>
-    <script>
-        async function loadStats() {
-            const res = await fetch('/dashboard-stats');
-            const data = await res.json();
-            document.getElementById('total-d').innerText = data.total;
-            document.getElementById('a-c').innerText = data.Apos;
-            document.getElementById('b-c').innerText = data.Bpos;
-        }
-        window.onload = loadStats;
-    </script>
+
+    <div class="nav-links">
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="donate.html">
+            Donate
+        </a>
+
+        <a href="request.html">
+            Request Blood
+        </a>
+
+        <a href="login.html" class="btn-red">
+            Admin Login
+        </a>
+
+    </div>
+
+</nav>
+
+<div class="container hero-section">
+
+    <div class="row align-items-center">
+
+        <div class="col-lg-6">
+
+            <h1 class="hero-title">
+
+                Donate Blood.
+                <br>
+
+                Save <span>Lives.</span>
+
+            </h1>
+
+            <p class="hero-sub">
+
+                Modern blood bank management system with real-time donor tracking,
+                emergency blood requests, smart inventory management and
+                futuristic healthcare technology.
+
+            </p>
+
+            <div class="d-flex gap-3 mt-4 flex-wrap">
+
+                <a href="donate.html" class="btn-red">
+
+                    Become Donor
+
+                </a>
+
+                <a href="request.html" class="btn-dark-glass">
+
+                    Emergency Request
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6 mt-5 mt-lg-0">
+
+            <div class="glass-card">
+
+                <div class="row g-4">
+
+                    <div class="col-6">
+
+                        <div class="stats-card red">
+
+                            <h2 id="total-d">
+                                0
+                            </h2>
+
+                            <p>
+                                Total Donors
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="stats-card blue">
+
+                            <h2 id="a-c">
+                                0
+                            </h2>
+
+                            <p>
+                                A+ Units
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="stats-card green">
+
+                            <h2 id="b-c">
+                                0
+                            </h2>
+
+                            <p>
+                                B+ Units
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="stats-card purple">
+
+                            <h2 id="o-c">
+                                0
+                            </h2>
+
+                            <p>
+                                O+ Units
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="container pb-5">
+
+    <div class="glass-card text-center">
+
+        <h2 class="mb-4">
+
+            Why Choose Lifeline?
+
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <div class="glass-card h-100">
+
+                    <h3>
+                        ⚡ Fast Access
+                    </h3>
+
+                    <p class="text-secondary mt-3">
+
+                        Real-time emergency blood request system with instant response.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="glass-card h-100">
+
+                    <h3>
+                        🔒 Secure Database
+                    </h3>
+
+                    <p class="text-secondary mt-3">
+
+                        Modern MongoDB powered blood donor management platform.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="glass-card h-100">
+
+                    <h3>
+                        🌍 Smart Tracking
+                    </h3>
+
+                    <p class="text-secondary mt-3">
+
+                        Manage donors, requests and blood inventory efficiently.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+async function loadStats(){
+
+    const res = await fetch('/dashboard-stats');
+
+    const data = await res.json();
+
+    document.getElementById('total-d').innerText =
+    data.total || 0;
+
+    document.getElementById('a-c').innerText =
+    data.Apos || 0;
+
+    document.getElementById('b-c').innerText =
+    data.Bpos || 0;
+
+    document.getElementById('o-c').innerText =
+    data.Opos || 0;
+
+}
+
+window.onload = loadStats;
+
+</script>
+
 </body>
 </html>
