@@ -3,109 +3,109 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Blood Requests</title>
+    <title>Blood Requests</title>
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="sidebar">
+        <aside class="sidebar">
 
-        <div>
+            <div>
 
-            <h2 class="sidebar-logo">
-                🩸 ADMIN
-            </h2>
+                <h2 class="sidebar-logo">
+                    🩸 ADMIN
+                </h2>
 
-            <div class="sidebar-links">
+                <div class="sidebar-links">
 
-                <a href="donors.html">
-                    Donors
-                </a>
+                    <a href="donors.html">
+                        Donors
+                    </a>
 
-                <a href="requests.html" class="active-link">
-                    Requests
-                </a>
+                    <a href="requests.html" class="active-link">
+                        Requests
+                    </a>
+
+                </div>
 
             </div>
 
-        </div>
+            <a href="/logout" class="logout-btn">
+                Logout
+            </a>
 
-        <a href="/logout" class="logout-btn">
-            Logout
-        </a>
+        </aside>
 
-    </aside>
+        <main class="admin-main">
 
-    <main class="admin-main">
+            <div class="page-top">
 
-        <div class="page-top">
+                <h1>
+                    Emergency Requests
+                </h1>
 
-            <h1>
-                Emergency Requests
-            </h1>
+                <p>
+                    Approve or reject blood requests
+                </p>
 
-            <p>
-                Approve or reject blood requests
-            </p>
+            </div>
 
-        </div>
+            <div class="table-glass">
 
-        <div class="table-glass">
+                <table>
 
-            <table>
+                    <thead>
 
-                <thead>
+                        <tr>
 
-                    <tr>
+                            <th>Patient</th>
+                            <th>Blood</th>
+                            <th>City</th>
+                            <th>Status</th>
+                            <th>Actions</th>
 
-                        <th>Patient</th>
-                        <th>Blood</th>
-                        <th>City</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        </tr>
 
-                    </tr>
+                    </thead>
 
-                </thead>
+                    <tbody id="requestTable"></tbody>
 
-                <tbody id="requestTable"></tbody>
+                </table>
 
-            </table>
+            </div>
 
-        </div>
+        </main>
 
-    </main>
+    </div>
 
-</div>
+    <script>
 
-<script>
+        async function loadRequests() {
 
-async function loadRequests(){
+            try {
 
-    try{
+                const res =
+                    await fetch('/requests-data');
 
-        const res =
-        await fetch('/requests-data');
+                const data =
+                    await res.json();
 
-        const data =
-        await res.json();
+                const table =
+                    document.getElementById('requestTable');
 
-        const table =
-        document.getElementById('requestTable');
+                if (!data.length) {
 
-        if(!data.length){
-
-            table.innerHTML =
-            `
+                    table.innerHTML =
+                        `
             <tr>
                 <td colspan="5" style="text-align:center;padding:30px;">
                     No requests found
@@ -113,17 +113,17 @@ async function loadRequests(){
             </tr>
             `;
 
-            return;
+                    return;
 
-        }
+                }
 
-        table.innerHTML =
-        data.map(r => `
+                table.innerHTML =
+                    data.map(r => `
 
         <tr>
 
             <td>
-                ${r.name || 'Unknown'}
+                ${r.patientName || r.name || 'Unknown'}
             </td>
 
             <td>
@@ -145,10 +145,10 @@ async function loadRequests(){
                 <span class="
                 status-badge
                 ${r.status === 'Accepted'
-                ? 'accepted'
-                : r.status === 'Rejected'
-                ? 'rejected'
-                : 'pending'}">
+                            ? 'accepted'
+                            : r.status === 'Rejected'
+                                ? 'rejected'
+                                : 'pending'}">
 
                 ${r.status || 'Pending'}
 
@@ -180,61 +180,62 @@ async function loadRequests(){
 
         `).join('');
 
-    }
+            }
 
-    catch(err){
+            catch (err) {
 
-        console.log(err);
+                console.log(err);
 
-    }
-
-}
-
-async function updateStatus(id,status){
-
-    try{
-
-        const res =
-        await fetch(`/update-request-status/${id}`,{
-
-            method:'POST',
-
-            headers:{
-                'Content-Type':'application/json'
-            },
-
-            body:JSON.stringify({status})
-
-        });
-
-        const data =
-        await res.json();
-
-        if(data.success){
-
-            loadRequests();
+            }
 
         }
 
-        else{
+        async function updateStatus(id, status) {
 
-            alert("Update failed");
+            try {
+
+                const res =
+                    await fetch(`/update-request-status/${id}`, {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+
+                        body: JSON.stringify({ status })
+
+                    });
+
+                const data =
+                    await res.json();
+
+                if (data.success) {
+
+                    loadRequests();
+
+                }
+
+                else {
+
+                    alert("Update failed");
+
+                }
+
+            }
+
+            catch (err) {
+
+                alert("Server error");
+
+            }
 
         }
 
-    }
+        window.onload = loadRequests;
 
-    catch(err){
-
-        alert("Server error");
-
-    }
-
-}
-
-window.onload = loadRequests;
-
-</script>
+    </script>
 
 </body>
+
 </html>
