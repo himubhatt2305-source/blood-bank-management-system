@@ -3,9 +3,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-
 body {
-
     font-family:
         system-ui,
         -apple-system,
@@ -88,8 +86,6 @@ body {
 
 }
 
-/* Navbar */
-
 /* =========================
    NAVBAR
 ========================= */
@@ -106,7 +102,7 @@ body {
 
     padding:18px 5%;
 
-    background:rgba(10,15,35,0.88);
+    background:rgba(8,12,30,0.92);
 
     backdrop-filter:blur(18px);
 
@@ -134,33 +130,35 @@ body {
 
     gap:10px;
 
+    letter-spacing:0.5px;
+
 }
 
-.nav-links{
+.nav-right{
 
     display:flex;
 
     align-items:center;
 
-    gap:32px;
+    gap:34px;
 
 }
 
-.nav-links a{
+.nav-right a{
 
     text-decoration:none;
 
     color:white;
 
-    font-weight:600;
-
     font-size:18px;
 
-    transition:0.3s;
+    font-weight:600;
+
+    transition:0.3s ease;
 
 }
 
-.nav-links a:hover{
+.nav-right a:hover{
 
     color:#ff4d6d;
 
@@ -190,7 +188,7 @@ body {
    MOBILE NAVBAR
 ========================= */
 
-@media (max-width:768px){
+@media(max-width:768px){
 
 .navbar-custom{
 
@@ -202,35 +200,27 @@ body {
 
     align-items:center;
 
-    gap:10px;
-
 }
 
 .logo{
 
     font-size:24px;
 
-    gap:6px;
+    gap:5px;
 
 }
 
-.nav-links{
-
-    display:flex;
-
-    align-items:center;
+.nav-right{
 
     gap:12px;
 
-    flex-wrap:nowrap;
+    align-items:center;
 
 }
 
-.nav-links a{
+.nav-right a{
 
     font-size:13px;
-
-    margin:0;
 
     white-space:nowrap;
 
